@@ -1,0 +1,10 @@
+fastapi==0.116.1
+pydantic==2.11.7
+python-dotenv==1.1.1
+psycopg2-binary==2.9.10
+slowapi
+passlib
+python-multipart
+uvicorn==0.29.0
+httpx
+websockets==15.0.1
