@@ -1,6 +1,7 @@
 from psycopg2.extras import RealDictCursor
 from psycopg2.extensions import connection
 #from psycopg2 import AsyncConnection
+from model import artefato
 from utils.functions import print_error_details
 from model.artefato import ArtefatoBase
 from psycopg2.extras import RealDictRow

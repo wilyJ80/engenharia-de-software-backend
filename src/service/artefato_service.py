@@ -1,5 +1,5 @@
-from src.model.artefato import Artefato, ArtefatoBase, ArtefatoResponse
-from src.repository import artefato_repository
+from model.artefato import Artefato, ArtefatoBase, ArtefatoResponse
+from repository import artefato_repository
 
 
 async def create_artefato(
