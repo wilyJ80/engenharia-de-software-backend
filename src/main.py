@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from routes.artefatos_router import router as artefatos_router
 from routes.fase_routes import fase_router as fase_routes
+from routes.ciclo_routes import router as ciclo_router
 import uvicorn
 
 # from routes.example_route import router as exampleRouter
@@ -10,8 +11,8 @@ from routes.usuario_route import router as usuarioRouter
 
 # Configuração da aplicação FastAPI
 app = FastAPI(
-    title="API Backend - Sistema de Usuários",
-    description="API para gerenciamento de usuários com autenticação JWT e operações CRUD completas",
+    title="API Backend - Sistema de Gerenciamento de Projetos",
+    description="API para gerenciamento de usuários, ciclos, fases e artefatos com autenticação JWT e operações CRUD completas",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -49,6 +50,7 @@ async def health_check():
 app.include_router(usuarioRouter)
 app.include_router(artefatos_router)
 app.include_router(fase_routes)
+app.include_router(ciclo_router)
 
 # Manipulador de exceções global
 @app.exception_handler(Exception)

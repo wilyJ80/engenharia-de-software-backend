@@ -9,4 +9,4 @@ class Usuario(Base):
     id: str = Field(..., description="Identificador único do usuário")
     nome: str = Field(..., description="Nome do usuário")
     email: EmailStr = Field(..., description="Email do usuário")
-    senha_hash: str = Field(..., description="Hash da senha do usuário")
+    senha: str = Field(..., description="Senha do usuário")

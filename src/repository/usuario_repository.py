@@ -35,7 +35,7 @@ async def get_usuario_by_id(
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
         try:
             cursor.execute("""
-                SELECT id, nome, email, created_at, updated_at 
+                SELECT id, nome, email, senha, created_at, updated_at 
                 FROM usuario 
                 WHERE id = %s;
             """, (usuario_id,))
@@ -55,7 +55,7 @@ async def get_usuario_by_email(
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
         try:
             cursor.execute("""
-                SELECT id, nome, email, senha_hash, created_at, updated_at 
+                SELECT id, nome, email, senha, created_at, updated_at 
                 FROM usuario 
                 WHERE email = %s;
             """, (email,))
@@ -99,7 +99,7 @@ async def email_exists(
 async def create_usuario(
     conn: connection,
     usuario_data: UsuarioCreateDTO,
-    senha_hash: str
+    senha: str
 ) -> Optional[RealDictRow]:
     """Cria um novo usuário no banco de dados."""
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
@@ -108,10 +108,10 @@ async def create_usuario(
             now = datetime.utcnow()
             
             cursor.execute("""
-                INSERT INTO usuario (id, nome, email, senha_hash, created_at) 
+                INSERT INTO usuario (id, nome, email, senha, created_at) 
                 VALUES (%s, %s, %s, %s, %s) 
                 RETURNING id, nome, email, created_at;
-            """, (user_id, usuario_data.nome, usuario_data.email, senha_hash, now))
+            """, (user_id, usuario_data.nome, usuario_data.email, senha, now))
             
             created_user = cursor.fetchone()
             conn.commit()
@@ -127,20 +127,20 @@ async def update_usuario(
     conn: connection,
     usuario_id: str,
     usuario_data: UsuarioCreateDTO,
-    senha_hash: Optional[str] = None
+    senha: Optional[str] = None
 ) -> Optional[RealDictRow]:
     """Atualiza um usuário existente."""
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
         try:
             now = datetime.utcnow()
             
-            if senha_hash:
+            if senha:
                 cursor.execute("""
                     UPDATE usuario 
-                    SET nome = %s, email = %s, senha_hash = %s, updated_at = %s 
+                    SET nome = %s, email = %s, senha = %s, updated_at = %s 
                     WHERE id = %s 
                     RETURNING id, nome, email, updated_at;
-                """, (usuario_data.nome, usuario_data.email, senha_hash, now, usuario_id))
+                """, (usuario_data.nome, usuario_data.email, senha, now, usuario_id))
             else:
                 cursor.execute("""
                     UPDATE usuario 
@@ -186,11 +186,11 @@ async def get_usuario_for_authentication(
     conn: connection,
     email: str
 ) -> Optional[RealDictRow]:
-    """Busca um usuário para autenticação (inclui senha_hash)."""
+    """Busca um usuário para autenticação (inclui senha)."""
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
         try:
             cursor.execute("""
-                SELECT id, nome, email, senha_hash, created_at, updated_at 
+                SELECT id, nome, email, senha, created_at, updated_at 
                 FROM usuario 
                 WHERE email = %s;
             """, (email,))
