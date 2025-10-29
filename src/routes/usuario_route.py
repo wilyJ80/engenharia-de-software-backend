@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from datetime import timedelta
 from typing import List
 
-from src.model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO, UsuarioLoginDTO
-from src.model.token import Token
-from src.service.usuario_service import UsuarioService
-from src.core.auth import create_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
+from model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO, UsuarioLoginDTO
+from model.token import Token
+from service.usuario_service import UsuarioService
+from core.auth import create_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
 
 router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 

@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 import uvicorn
 
 # from routes.example_route import router as exampleRouter
-from src.routes.usuario_route import router as usuarioRouter
+from routes.usuario_route import router as usuarioRouter
 
 # Configuração da aplicação FastAPI
 app = FastAPI(

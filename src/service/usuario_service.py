@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Optional, List
-from src.model.usuario import Usuario
-from src.model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO
-from src.core.auth import get_password_hash, verify_password
+from model.usuario import Usuario
+from model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO
+from core.auth import get_password_hash, verify_password
 import uuid
 
 # Simulação de banco de dados em memória (substitua por implementação real)
