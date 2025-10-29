@@ -22,7 +22,7 @@ async def create_artefato(
     if not created_artefato:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Erro ao criar o artefato."
+            detail="Já existe um artefato com o nome {artefato.nome}."
         )
     
     return created_artefato
