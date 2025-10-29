@@ -25,7 +25,7 @@ SET row_security = off;
 CREATE TYPE public.cardstatus AS ENUM (
     'a_fazer',
     'em_andamento',
-    'validacao',
+    'testes_validacao',
     'concluido'
 );
 
@@ -206,7 +206,7 @@ edefabb6-ae16-41e8-9446-1bf47e751a66	nome_5	2025-10-29 16:00:28+00	2025-10-29 16
 COPY public.card (id, status, tempo_planejado_horas, link, descricao, ciclo_id, fase_id, artefato_id, responsavel_id, created_at, updated_at) FROM stdin;
 85829601-31f7-439d-9cc8-81f6bf8f034d	a_fazer	1.64	link_1	card_descricao_1	3460831c-3699-4c9e-baf1-205407bb8438	c39db310-ef5c-4ecb-a0ba-03786de2988a	1a35aa44-3370-411a-a8d4-81231b2ad93d	86b5573c-a4f2-4cc2-a5db-38255c0814dd	2025-10-29 16:00:28+00	2025-10-29 16:00:28+00
 99e53759-0acf-4dad-813b-5c247f8ed4a2	em_andamento	3.17	link_2	card_descricao_2	8984a4ed-f401-4d77-9e0d-43bbdb7d174f	627beaf8-e41b-402c-8023-12a98266764d	771b254c-baea-4dae-8e28-20a6a00a9c53	3b05da01-dd1c-4d02-a095-07cb60c1dd20	2025-10-29 16:00:28+00	2025-10-29 16:00:28+00
-23a4aa50-d9aa-4b62-a270-ef027f37d175	validacao	4.25	link_3	card_descricao_3	33e5dfc4-b781-4f6b-93a1-f83a3e6550ee	ea471d14-686f-4759-8c5e-4f4e732c983c	46f7b45d-16eb-4d7f-91c9-05a34395a3a4	e27a1744-ad2c-4a2c-afe6-0bdf2523e083	2025-10-29 16:00:28+00	2025-10-29 16:00:28+00
+23a4aa50-d9aa-4b62-a270-ef027f37d175	testes_validacao	4.25	link_3	card_descricao_3	33e5dfc4-b781-4f6b-93a1-f83a3e6550ee	ea471d14-686f-4759-8c5e-4f4e732c983c	46f7b45d-16eb-4d7f-91c9-05a34395a3a4	e27a1744-ad2c-4a2c-afe6-0bdf2523e083	2025-10-29 16:00:28+00	2025-10-29 16:00:28+00
 6c4c32b4-49e4-4f37-94bb-1e39df44e330	concluido	5.98	link_4	card_descricao_4	c6b5cbbf-f09b-44ab-86ee-8afaba541896	46c7e807-07a2-46ac-9239-b5a5df84aa24	0c937277-d8f9-4165-ab36-8812e7600ed8	88bff843-ecfb-48d1-9a19-b511ae580ce7	2025-10-29 16:00:28+00	2025-10-29 16:00:28+00
 a3e8ef87-9c5b-44aa-a0bb-a0bfe3ac2c3a	a_fazer	6.82	link_5	card_descricao_5	db19835c-9905-4702-bb2b-81f2f8566c0c	f5a3fda5-52b6-45a3-b4ca-0067eec9a1bb	03d33415-11b3-489c-98e6-4b478805f689	1a6ca1a7-2ef1-46f3-9bff-d92ad4a83c42	2025-10-29 16:00:28+00	2025-10-29 16:00:28+00
 \.
