@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from src.routes import artefatos_router, fase_routes
 import uvicorn
 
 # from routes.example_route import router as exampleRouter
@@ -45,6 +46,8 @@ async def health_check():
 # Inclusão das rotas
 # app.include_router(exampleRouter)
 app.include_router(usuarioRouter)
+app.include_router(artefatos_router)
+app.include_router(fase_routes)
 
 # Manipulador de exceções global
 @app.exception_handler(Exception)
