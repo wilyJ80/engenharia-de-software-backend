@@ -58,11 +58,9 @@ class CardService:
         """Obtém todos os cards sem filtro."""
         try:
             cards_data = await card_repository.get_all_cards(conn)
-            print("CARDS DATA: ", cards_data)
             return [CardService._map_to_response_dto(card) for card in cards_data]
         except Exception as e:
             print_error_details(e)
-            print(traceback.format_exc())
             return []
 
     @staticmethod
