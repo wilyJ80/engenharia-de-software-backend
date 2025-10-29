@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
-from artefato import Artefato
+from model.artefato import Artefato
 
 class FaseBase(BaseModel):
     nome : str = Field(description="Nome da fase", example="")
