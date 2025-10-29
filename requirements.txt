@@ -38,9 +38,4 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 uvicorn==0.29.0
 websockets==15.0.1
-<<<<<<< Updated upstream
 wrapt==1.17.3
-=======
-pytest
-pytest-mock
->>>>>>> Stashed changes
