@@ -10,44 +10,33 @@ class FaseService:
     async def create_fase(
         db,
         fase: FaseBase,
-    ):
-
-        existing_fase = await fase_repository.get_fase_by_id(db, fase.id)
-        if existing_fase:
-            return None
-
-        inserted_fase = await fase_repository.create_fase(fase)
+    ) -> Fase | None:
+        inserted_fase = await fase_repository.create_fase(db, fase)
 
         return inserted_fase
 
     @staticmethod
-    async def get_all_fases(db: connection):
-        fases = await fase_repository.get_all_fases(db)
-        return fases
+    async def get_all_fases(db: connection) -> list[FaseResponse]:
+        return await fase_repository.get_all_fases(db)
 
     @staticmethod
-    async def get_fase_by_id(db, fase_id: str,):
-        if not fase_id:
-            raise HTTPException(status_code=404, detail="fase_id is required")
-
-        fase = await fase_repository.get_fase_by_id(db, fase_id)
-        return fase
-
-    @staticmethod
-    async def update_fase(db, fase_id: str, fase: FaseBase):
-        if not fase_id:
-            raise HTTPException(status_code=404, detail="fase_id is required")
-
-        if not fase:
-            raise HTTPException(status_code=404, detail="fase is required")
-
-        updated_fase = await fase_repository.update_fase(db, fase_id, fase)
-        return updated_fase
+    async def get_fase_by_id(
+        db: connection, 
+        fase_id: str,
+    ) -> FaseResponse | None:
+        return await fase_repository.get_fase_by_id(db, fase_id)
 
     @staticmethod
-    async def delete_fase(db, fase_id: str):
-        if not fase_id:
-            raise HTTPException(status_code=404, detail="fase_id is required")
+    async def update_fase(
+        db: connection, 
+        fase_id: str, 
+        fase: FaseBase
+    ) -> FaseResponse | None:
+        return await fase_repository.update_fase(db, fase_id, fase)
 
-        deleted_fase = await fase_repository.delete_fase(db, fase_id)
-        return deleted_fase
+    @staticmethod
+    async def delete_fase(
+        db: connection, 
+        fase_id: str
+    ) -> FaseResponse | None:
+        return await fase_repository.delete_fase(db, fase_id)
