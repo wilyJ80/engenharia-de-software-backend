@@ -40,5 +40,16 @@ async def create_fase(conn: connection, fase: FaseBase):
         except Exception as e:
             print_error_details(e)
 # PUT
+async def update_fase(conn: connection, fase_id: int, fase: FaseBase) -> RealDictRow | None:
+    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+        try:
+            cursor.execute("""
+                            UPDATE fase SET nome = %s, descritivo = %s, ordem = %s WHERE id = %s RETURNING id, nome, descritivo, ordem;
+                        """)
+            cursor.execute(cursor, (fase.nome, fase.descritivo, fase.ordem, fase_id))
+            return cursor.fetchone()
+        except Exception as e:
+            print_error_details(e)
+
 
 # DELETE
