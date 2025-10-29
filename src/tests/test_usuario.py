@@ -1,10 +1,12 @@
-<<<<<<< Updated upstream
+import pytest
 from unittest.mock import patch
 import uuid
 
 from fastapi.testclient import TestClient
 from main import app
 from core.auth import get_current_user
+from model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO
+from routes.usuario_route import UsuarioService
 
 client = TestClient(app)
 
@@ -19,6 +21,13 @@ def usuarios_fake(quant: int):
         })
     return lista
 
+@pytest.fixture
+def usuario_base():
+    return UsuarioCreateDTO(
+        nome="Eduardo Américo",
+        email="eduardo@example.com",
+        senha="12345678"
+    )
 
 def test_acesso_negado():
     response = client.get("/usuarios/")
@@ -43,7 +52,6 @@ def test_listar_usuarios(mock_get_all_users):  #usa autenticacao
     app.dependency_overrides = {}
 
 
-
 @patch("service.usuario_service.UsuarioService.get_user_by_id")
 def test_acessar_usuario_unico(mock_get_user_by_id):  #usa autenticacao
     app.dependency_overrides[get_current_user] = lambda: "fake_user_id"
@@ -57,24 +65,9 @@ def test_acessar_usuario_unico(mock_get_user_by_id):  #usa autenticacao
     assert response.status_code == 200
     assert data == user_disponivel
     app.dependency_overrides = {}
-=======
-import pytest
-from model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO
-from routes.usuario_route import UsuarioService
-from core.auth import verify_password
-
-@pytest.fixture
-def usuario_base():
-    return UsuarioCreateDTO(
-        nome="Eduardo Américo",
-        email="eduardo@example.com",
-        senha="12345678"
-    )
 
 def test_criar_usuario_sucesso(mocker, usuario_base):
-    # Mocka o método create_user
     fake_id = "1234"
-    fake_senha_hash = "hashed_12345678"
     fake_user = UsuarioResponseDTO(id=fake_id, nome=usuario_base.nome, email=usuario_base.email)
 
     mocker.patch.object(
@@ -89,7 +82,6 @@ def test_criar_usuario_sucesso(mocker, usuario_base):
     assert hasattr(usuario_resp, "id")
 
 def test_criar_usuario_email_duplicado(mocker, usuario_base):
-    # Mocka o método create_user para lançar ValueError
     mocker.patch.object(
         UsuarioService,
         'create_user',
@@ -98,4 +90,4 @@ def test_criar_usuario_email_duplicado(mocker, usuario_base):
 
     with pytest.raises(ValueError, match="Email já cadastrado"):
         UsuarioService.create_user(usuario_base)
->>>>>>> Stashed changes
+
