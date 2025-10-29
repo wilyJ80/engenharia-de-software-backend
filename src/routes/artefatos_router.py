@@ -79,3 +79,24 @@ async def delete_artefato(
         )
     
     return
+
+@router.put(
+    "/{artefato_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=ArtefatoResponse,
+    summary="Atualiza um artefato pelo ID",
+)
+async def update_artefato(
+    artefato_id: str,
+    artefato: ArtefatoBase,
+    #db = Depends(get_db)
+):
+    updated_artefato = await artefato_service.update_artefato(artefato_id, artefato)
+
+    if not updated_artefato:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Artefato com ID {artefato_id} não encontrado."
+        )
+    
+    return updated_artefato

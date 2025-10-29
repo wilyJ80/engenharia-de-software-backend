@@ -66,19 +66,21 @@ async def create_artefato(
 # PUT
 async def update_artefato(
     conn: connection,
-    artefato_id: int,
+    artefato_id: str,
     artefato: ArtefatoBase
 ) -> RealDictRow | None:
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
         try:
             cursor.execute("""
                             UPDATE artefato SET nome = %s WHERE id = %s RETURNING id, nome;
-                        """)
-            cursor.execute(cursor, (artefato.nome,))
-            return cursor.fetchone()
+                        """, (artefato.nome, artefato_id))
+            updated = cursor.fetchone()
+            conn.commit()
+            return updated
         except Exception as e:
+            conn.rollback()
             print_error_details(e)
-
+            raise e
 
 # DELETE
 async def delete_artefato(conn: connection, artefato_id: str) -> RealDictRow | None:
