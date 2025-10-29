@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
-from model.usuario_2 import Usuario, UsuarioCreate, UsuarioResponse
+from model.usuario import Usuario
+from model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO
 from core.auth import get_password_hash, verify_password
 import uuid
 
@@ -10,7 +11,7 @@ fake_users_db = {}
 class UsuarioService:
     
     @staticmethod
-    def create_user(usuario_data: UsuarioCreate) -> UsuarioResponse:
+    def create_user(usuario_data: UsuarioCreateDTO) -> UsuarioResponseDTO:
         """Cria um novo usuário."""
         # Verifica se o email já existe
         for user in fake_users_db.values():
@@ -37,7 +38,7 @@ class UsuarioService:
         fake_users_db[user_id] = usuario
         
         # Retorna resposta sem a senha
-        return UsuarioResponse(
+        return UsuarioResponseDTO(
             id=usuario.id,
             nome=usuario.nome,
             email=usuario.email
@@ -53,11 +54,11 @@ class UsuarioService:
         return None
     
     @staticmethod
-    def get_user_by_id(user_id: str) -> Optional[UsuarioResponse]:
+    def get_user_by_id(user_id: str) -> Optional[UsuarioResponseDTO]:
         """Obtém um usuário pelo ID."""
         user = fake_users_db.get(user_id)
         if user:
-            return UsuarioResponse(
+            return UsuarioResponseDTO(
                 id=user.id,
                 nome=user.nome,
                 email=user.email
@@ -65,10 +66,10 @@ class UsuarioService:
         return None
     
     @staticmethod
-    def get_all_users() -> List[UsuarioResponse]:
+    def get_all_users() -> List[UsuarioResponseDTO]:
         """Obtém todos os usuários."""
         return [
-            UsuarioResponse(
+            UsuarioResponseDTO(
                 id=user.id,
                 nome=user.nome,
                 email=user.email
@@ -77,7 +78,7 @@ class UsuarioService:
         ]
     
     @staticmethod
-    def update_user(user_id: str, usuario_data: UsuarioCreate) -> Optional[UsuarioResponse]:
+    def update_user(user_id: str, usuario_data: UsuarioCreateDTO) -> Optional[UsuarioResponseDTO]:
         """Atualiza um usuário."""
         user = fake_users_db.get(user_id)
         if not user:
@@ -96,7 +97,7 @@ class UsuarioService:
         
         fake_users_db[user_id] = user
         
-        return UsuarioResponse(
+        return UsuarioResponseDTO(
             id=user.id,
             nome=user.nome,
             email=user.email
