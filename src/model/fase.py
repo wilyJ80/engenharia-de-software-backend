@@ -6,7 +6,7 @@ from model.artefato import Artefato
 class FaseBase(BaseModel):
     nome : str = Field(description="Nome da fase", example="")
     descritivo: str = Field(description="Descrição da fase", example="")
-    artefato: list[Artefato] = Field(description="Artefatos", example="")
+    artefato: Optional[list[Artefato]] = Field(None, description="Artefatos", example="")
     ordem: int = Field(description="Ordem da fase", example="")
 
 class FaseResponse(FaseBase):
