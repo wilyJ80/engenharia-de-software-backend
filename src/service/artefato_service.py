@@ -11,7 +11,7 @@ async def create_artefato(
     if existing_artefato:
         return None
 
-    inserted_artefato = await artefato_repository.create_artefato(artefato)
+    inserted_artefato = await artefato_repository.create_artefato(db, artefato)
 
     return inserted_artefato
 
