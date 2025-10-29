@@ -1,15 +1,13 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
 from datetime import datetime
 
-class UsuarioBase(BaseModel):
-    nome : str = Field(description="Nome do usuário", example="Alan Victor")
-    email: str = Field(description="email do usuário", example="Alan Victor@email.com")
-    senha: str = Field(description="senha do usuário", example="123")
+from .base import Base
 
-class UsuarioResponse(UsuarioBase):
-    id: str = Field(..., description="Identificador único da Revista")
+class Usuario(Base):
 
-class Usuario(UsuarioResponse):
-    created_at: datetime           = Field(..., description="Data de criação do registro")
-    updated_at: Optional[datetime] = Field(None, description="Data da última atualização do registro")
+    id: str = Field(..., description="Identificador único do usuário")
+    nome: str = Field(..., description="Nome do usuário")
+    email: EmailStr = Field(..., description="Email do usuário")
+    senha_hash: str = Field(..., description="Hash da senha do usuário")
+
