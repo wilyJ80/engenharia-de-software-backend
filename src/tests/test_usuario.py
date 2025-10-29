@@ -82,6 +82,20 @@ def test_deletar_usuario(mock_delete_user):  #usa autenticacao
     app.dependency_overrides = {}
 
 
+@patch("service.usuario_service.UsuarioService.delete_user")
+def test_deletar_usuario_sem_acesso(mock_delete_user):  #usa autenticacao
+    id_user_logado = "fake_user_id"
+    app.dependency_overrides[get_current_user] = lambda: id_user_logado
+
+    mock_delete_user.return_value = True
+    
+    response = client.delete(f"/usuarios/id_outro_usuario")
+
+    assert response.status_code == 403
+    mock_delete_user.assert_not_called
+    app.dependency_overrides = {}
+
+
 def test_criar_usuario_sucesso(mocker, usuario_base):
     fake_id = "1234"
     fake_user = UsuarioResponseDTO(id=fake_id, nome=usuario_base.nome, email=usuario_base.email)
