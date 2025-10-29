@@ -49,6 +49,7 @@ def test_listar_usuarios(mock_get_all_users):  #usa autenticacao
     assert len(data) == 2
     assert data[0]["email"] == users_disponiveis[0]["email"]
     assert data[1]["email"]== users_disponiveis[1]["email"]
+    mock_get_all_users.assert_called_once
     app.dependency_overrides = {}
 
 
@@ -64,6 +65,7 @@ def test_acessar_usuario_unico(mock_get_user_by_id):  #usa autenticacao
 
     assert response.status_code == 200
     assert data == user_disponivel
+    mock_get_user_by_id.assert_called_once
     app.dependency_overrides = {}
 
 
@@ -92,6 +94,7 @@ def test_editar_usuario(mock_update_user, mock_create_user):  #usa autenticacao
     assert data['id'] == id_user_logado
     assert data['nome'] == usuario_atualizado['nome']
     assert data['email'] == usuario_atualizado['email']
+    mock_update_user.assert_called_once_with(id_user_logado, UsuarioCreateDTO(nome=usuario_atualizado["nome"], email=usuario_atualizado["email"], senha=usuario_atualizado["senha"]))
     app.dependency_overrides = {}
 
 
