@@ -1,7 +1,9 @@
 from http.client import HTTPException
-from fastapi import APIRouter, status, Depends, Response
+from fastapi import APIRouter, status, Depends
 from model.artefato import Artefato, ArtefatoBase, ArtefatoResponse
 from service import artefato_service
+from psycopg2.extensions import connection
+from db.database import get_db
 
 router = APIRouter(prefix="/artefatos", tags=['artefatos'])
 
@@ -13,9 +15,9 @@ router = APIRouter(prefix="/artefatos", tags=['artefatos'])
 )
 async def create_artefato(
     artefato: ArtefatoBase,
-   # db = Depends(get_db)
+    db: connection = Depends(get_db),
 ):
-    created_artefato = await artefato_service.create_artefato(artefato)
+    created_artefato = await artefato_service.create_artefato(db, artefato)
 
     if not created_artefato:
         raise HTTPException(
@@ -32,9 +34,9 @@ async def create_artefato(
     summary="Lista todos os artefatos",
 )
 async def get_all_artefatos(
-    #db = Depends(get_db)
+    db: connection = Depends(get_db),
 ):
-    artefatos = await artefato_service.get_all_artefatos()
+    artefatos = await artefato_service.get_all_artefatos(db)
 
     if not artefatos:
         raise HTTPException(
@@ -51,9 +53,9 @@ async def get_all_artefatos(
 )
 async def get_artefato_by_id(
     artefato_id: str,
-    #db = Depends(get_db)
+    db: connection = Depends(get_db),
 ):
-    artefato = await artefato_service.get_artefato_by_id(artefato_id)
+    artefato = await artefato_service.get_artefato_by_id(db, artefato_id)
     if artefato is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -69,9 +71,9 @@ async def get_artefato_by_id(
 )
 async def delete_artefato(
     artefato_id: str,
-    #db = Depends(get_db)
+    db: connection = Depends(get_db),
 ):
-    deleted_artefato = await artefato_service.delete_artefato(artefato_id)
+    deleted_artefato = await artefato_service.delete_artefato(db, artefato_id)
     if deleted_artefato is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -89,14 +91,14 @@ async def delete_artefato(
 async def update_artefato(
     artefato_id: str,
     artefato: ArtefatoBase,
-    #db = Depends(get_db)
+    db: connection = Depends(get_db),
 ):
-    updated_artefato = await artefato_service.update_artefato(artefato_id, artefato)
+    updated_artefato = await artefato_service.update_artefato(db, artefato_id, artefato)
 
     if not updated_artefato:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Artefato com ID {artefato_id} não encontrado."
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Já existe um artefato com o nome {artefato.nome}."
         )
     
     return updated_artefato
