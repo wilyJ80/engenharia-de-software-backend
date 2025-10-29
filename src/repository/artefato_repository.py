@@ -1,35 +1,45 @@
 from psycopg2.extras import RealDictCursor
 from psycopg2.extensions import connection
+#from psycopg2 import AsyncConnection
+from src.model import artefato
 from utils.functions import print_error_details
 from model.artefato import ArtefatoBase
 from psycopg2.extras import RealDictRow
 
 
 # |=======| LISTANDO TODOS OS ARTEFATOS |=======|
-async def get_all_artefatos(conn: connection) -> list[RealDictRow]:
+async def get_all_artefatos(
+        conn: connection
+) -> list[RealDictRow]:
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-        cursor.execute("""
-                        SELECT id, nome, descritivo, ordem FROM artefato;
-                    """)
+        try:
+            cursor.execute("""
+                            SELECT id, nome FROM artefato;
+                        """)
 
-        return cursor.fetchall()
+            artefatos = cursor.fetchall()
+            return artefatos
+        except Exception as e:
+            print_error_details(e)
+            raise e
 
 # FIND BY ID
 
 async def get_artefato_by_id(
     conn: connection,
-    artefato_id: int
+    artefato_id: str
 ) -> RealDictRow | None:
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
         try:
             cursor.execute("""
-                            SELECT id, nome, descritivo, ordem FROM artefato WHERE id = %s;
-                        """)
+                            SELECT id, nome FROM artefato WHERE id = %s;
+                        """, (artefato_id,))
 
-            cursor.execute(cursor, (artefato_id,))
-            return cursor.fetchone()
+            artefato = cursor.fetchone()
+            return artefato
         except Exception as e:
             print_error_details(e)
+            raise e
 
 
 # |=======| POST
@@ -71,16 +81,20 @@ async def update_artefato(
 
 
 # DELETE
-async def delete_artefato(conn: connection, artefato_id: int) -> RealDictRow | None:
+async def delete_artefato(conn: connection, artefato_id: str) -> RealDictRow | None:
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
         try:
             cursor.execute("""
-                            DELETE FROM artefato WHERE id = %s;
-                        """)
-            cursor.execute(cursor, (artefato_id,))
-            return cursor.fetchone()
+                            DELETE FROM artefato WHERE id = %s
+                            RETURNING id, nome;
+                        """, (artefato_id,))
+            deleted = cursor.fetchone()
+            conn.commit()
+            return deleted
         except Exception as e:
+            conn.rollback()
             print_error_details(e)
+            raise e
 
 
 async def get_artefato_by_name(
@@ -94,7 +108,8 @@ async def get_artefato_by_name(
                             WHERE nome = %s
                         """, (nome_artefato,))
 
-            return cursor.fetchone()
+            artefato = cursor.fetchone()
+            return artefato
         except Exception as e:
             print_error_details(e)
-            return None
+            raise e
