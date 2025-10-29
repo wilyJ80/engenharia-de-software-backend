@@ -5,7 +5,7 @@ from psycopg2.extensions import connection
 async def get_all_fases(conn: connection):
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
         cursor.execute("""
-                        SELECT id,  FROM fase;
+                        SELECT id, nome, descritivo, ordem FROM fase;
                     """)
         
         return cursor.fetchall()
