@@ -3,7 +3,8 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from passlib.context import CryptContext
-from jose import JWTError, jwt
+import jwt
+from jwt import InvalidTokenError
 import os
 from dotenv import load_dotenv
 
@@ -26,6 +27,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     """Gera o hash da senha."""
+    # Trunca a senha se for muito longa (bcrypt tem limite de 72 bytes)
+    if len(password.encode('utf-8')) > 72:
+        password = password.encode('utf-8')[:72].decode('utf-8', errors='ignore')
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -53,7 +57,7 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
         if user_id is None:
             raise credentials_exception
         return user_id
-    except JWTError:
+    except InvalidTokenError:
         raise credentials_exception
 
 def get_current_user(user_id: str = Depends(verify_token)):

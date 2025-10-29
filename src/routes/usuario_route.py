@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from datetime import timedelta
 from typing import List
 
-from model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO, UsuarioLoginDTO
-from model.token import Token
-from service.usuario_service import UsuarioService
-from core.auth import create_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
+from src.model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO, UsuarioLoginDTO
+from src.model.token import Token
+from src.service.usuario_service import UsuarioService
+from src.core.auth import create_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
 
 router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
@@ -55,6 +55,7 @@ async def listar_usuarios(current_user_id: str = Depends(get_current_user)):
     """Lista todos os usuários (requer autenticação)."""
     return UsuarioService.get_all_users()
 
+
 @router.get("/{user_id}", response_model=UsuarioResponseDTO)
 async def obter_usuario(user_id: str, current_user_id: str = Depends(get_current_user)):
     """Obtém um usuário pelo ID (requer autenticação)."""
@@ -73,7 +74,6 @@ async def atualizar_usuario(
     current_user_id: str = Depends(get_current_user)
 ):
     """Atualiza um usuário (requer autenticação)."""
-    # Verifica se o usuário pode atualizar apenas seus próprios dados
     if user_id != current_user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -100,7 +100,6 @@ async def deletar_usuario(
     current_user_id: str = Depends(get_current_user)
 ):
     """Deleta um usuário (requer autenticação)."""
-    # Verifica se o usuário pode deletar apenas sua própria conta
     if user_id != current_user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
