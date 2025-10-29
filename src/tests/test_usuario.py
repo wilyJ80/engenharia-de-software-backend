@@ -66,6 +66,22 @@ def test_acessar_usuario_unico(mock_get_user_by_id):  #usa autenticacao
     assert data == user_disponivel
     app.dependency_overrides = {}
 
+
+@patch("service.usuario_service.UsuarioService.delete_user")
+def test_deletar_usuario(mock_delete_user):  #usa autenticacao
+    id_user_logado = "fake_user_id"
+    app.dependency_overrides[get_current_user] = lambda: id_user_logado
+
+    mock_delete_user.return_value = True
+    
+    response = client.delete(f"/usuarios/{id_user_logado}")
+
+    assert response.status_code == 204
+    assert response.text == ''
+    mock_delete_user.assert_called_once_with(id_user_logado)
+    app.dependency_overrides = {}
+
+
 def test_criar_usuario_sucesso(mocker, usuario_base):
     fake_id = "1234"
     fake_user = UsuarioResponseDTO(id=fake_id, nome=usuario_base.nome, email=usuario_base.email)
@@ -80,6 +96,7 @@ def test_criar_usuario_sucesso(mocker, usuario_base):
     assert usuario_resp.nome == usuario_base.nome
     assert usuario_resp.email == usuario_base.email
     assert hasattr(usuario_resp, "id")
+
 
 def test_criar_usuario_email_duplicado(mocker, usuario_base):
     mocker.patch.object(
