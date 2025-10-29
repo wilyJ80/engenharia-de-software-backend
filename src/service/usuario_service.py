@@ -1,112 +1,145 @@
 from datetime import datetime
 from typing import Optional, List
+from psycopg2.extensions import connection
 from model.usuario import Usuario
 from model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO
 from core.auth import get_password_hash, verify_password
-import uuid
-
-# Simulação de banco de dados em memória (substitua por implementação real)
-fake_users_db = {}
+from repository import usuario_repository
+from utils.functions import print_error_details
 
 class UsuarioService:
     
     @staticmethod
-    def create_user(usuario_data: UsuarioCreateDTO) -> UsuarioResponseDTO:
+    async def create_user(conn: connection, usuario_data: UsuarioCreateDTO) -> UsuarioResponseDTO:
         """Cria um novo usuário."""
-        # Verifica se o email já existe
-        for user in fake_users_db.values():
-            if user.email == usuario_data.email:
+        try:
+            # Verifica se o email já existe
+            if await usuario_repository.email_exists(conn, usuario_data.email):
                 raise ValueError("Email já cadastrado")
-        
-        # Gera ID único
-        user_id = str(uuid.uuid4())
-        
-        # Hash da senha
-        senha_hash = get_password_hash(usuario_data.senha)
-        
-        # Cria o usuário
-        usuario = Usuario(
-            id=user_id,
-            nome=usuario_data.nome,
-            email=usuario_data.email,
-            senha_hash=senha_hash,
-            created_at=datetime.utcnow(),
-            updated_at=None
-        )
-        
-        # Salva no "banco de dados"
-        fake_users_db[user_id] = usuario
-        
-        # Retorna resposta sem a senha
-        return UsuarioResponseDTO(
-            id=usuario.id,
-            nome=usuario.nome,
-            email=usuario.email
-        )
-    
-    @staticmethod
-    def authenticate_user(email: str, senha: str) -> Optional[Usuario]:
-        """Autentica um usuário."""
-        for user in fake_users_db.values():
-            if user.email == email:
-                if verify_password(senha, user.senha_hash):
-                    return user
-        return None
-    
-    @staticmethod
-    def get_user_by_id(user_id: str) -> Optional[UsuarioResponseDTO]:
-        """Obtém um usuário pelo ID."""
-        user = fake_users_db.get(user_id)
-        if user:
+            
+            # Hash da senha
+            senha_hash = get_password_hash("123")
+            
+            # Cria o usuário no banco
+            created_user = await usuario_repository.create_usuario(conn, usuario_data, senha_hash)
+            
+            if not created_user:
+                raise ValueError("Erro ao criar usuário")
+            
+            # Retorna resposta sem a senha
             return UsuarioResponseDTO(
-                id=user.id,
-                nome=user.nome,
-                email=user.email
+                id=created_user['id'],
+                nome=created_user['nome'],
+                email=created_user['email']
             )
-        return None
+        except Exception as e:
+            print_error_details(e)
+            raise e
     
     @staticmethod
-    def get_all_users() -> List[UsuarioResponseDTO]:
-        """Obtém todos os usuários."""
-        return [
-            UsuarioResponseDTO(
-                id=user.id,
-                nome=user.nome,
-                email=user.email
-            )
-            for user in fake_users_db.values()
-        ]
-    
-    @staticmethod
-    def update_user(user_id: str, usuario_data: UsuarioCreateDTO) -> Optional[UsuarioResponseDTO]:
-        """Atualiza um usuário."""
-        user = fake_users_db.get(user_id)
-        if not user:
+    async def authenticate_user(conn: connection, email: str, senha: str) -> Optional[Usuario]:
+        """Autentica um usuário."""
+        try:
+            user_data = await usuario_repository.get_usuario_for_authentication(conn, email)
+            if user_data and verify_password(senha, user_data['senha_hash']):
+                return Usuario(
+                    id=user_data['id'],
+                    nome=user_data['nome'],
+                    email=user_data['email'],
+                    senha_hash=user_data['senha_hash'],
+                    created_at=user_data['created_at'],
+                    updated_at=user_data['updated_at']
+                )
             return None
-        
-        # Verifica se o novo email já existe (exceto para o próprio usuário)
-        for uid, u in fake_users_db.items():
-            if uid != user_id and u.email == usuario_data.email:
-                raise ValueError("Email já cadastrado")
-        
-        # Atualiza os dados
-        user.nome = usuario_data.nome
-        user.email = usuario_data.email
-        user.senha_hash = get_password_hash(usuario_data.senha)
-        user.updated_at = datetime.utcnow()
-        
-        fake_users_db[user_id] = user
-        
-        return UsuarioResponseDTO(
-            id=user.id,
-            nome=user.nome,
-            email=user.email
-        )
+        except Exception as e:
+            print_error_details(e)
+            return None
     
     @staticmethod
-    def delete_user(user_id: str) -> bool:
+    async def get_user_by_id(conn: connection, user_id: str) -> Optional[UsuarioResponseDTO]:
+        """Obtém um usuário pelo ID."""
+        try:
+            user_data = await usuario_repository.get_usuario_by_id(conn, user_id)
+            if user_data:
+                return UsuarioResponseDTO(
+                    id=user_data['id'],
+                    nome=user_data['nome'],
+                    email=user_data['email']
+                )
+            return None
+        except Exception as e:
+            print_error_details(e)
+            return None
+    
+    @staticmethod
+    async def get_all_users(conn: connection) -> List[UsuarioResponseDTO]:
+        """Obtém todos os usuários."""
+        try:
+            users_data = await usuario_repository.get_all_usuarios(conn)
+            return [
+                UsuarioResponseDTO(
+                    id=user['id'],
+                    nome=user['nome'],
+                    email=user['email']
+                )
+                for user in users_data
+            ]
+        except Exception as e:
+            print_error_details(e)
+            return []
+    
+    @staticmethod
+    async def update_user(conn: connection, user_id: str, usuario_data: UsuarioCreateDTO) -> Optional[UsuarioResponseDTO]:
+        """Atualiza um usuário."""
+        try:
+            # Verifica se o usuário existe
+            existing_user = await usuario_repository.get_usuario_by_id(conn, user_id)
+            if not existing_user:
+                return None
+            
+            # Verifica se o novo email já existe (exceto para o próprio usuário)
+            if await usuario_repository.email_exists(conn, usuario_data.email, user_id):
+                raise ValueError("Email já cadastrado")
+            
+            # Hash da nova senha
+            senha_hash = get_password_hash(usuario_data.senha)
+            
+            # Atualiza o usuário
+            updated_user = await usuario_repository.update_usuario(conn, user_id, usuario_data, senha_hash)
+            
+            if updated_user:
+                return UsuarioResponseDTO(
+                    id=updated_user['id'],
+                    nome=updated_user['nome'],
+                    email=updated_user['email']
+                )
+            return None
+        except Exception as e:
+            print_error_details(e)
+            raise e
+    
+    @staticmethod
+    async def delete_user(conn: connection, user_id: str) -> bool:
         """Deleta um usuário."""
-        if user_id in fake_users_db:
-            del fake_users_db[user_id]
-            return True
-        return False
+        try:
+            deleted_user = await usuario_repository.delete_usuario(conn, user_id)
+            return deleted_user is not None
+        except Exception as e:
+            print_error_details(e)
+            return False
+    
+    @staticmethod
+    async def get_user_by_email(conn: connection, email: str) -> Optional[UsuarioResponseDTO]:
+        """Obtém um usuário pelo email."""
+        try:
+            user_data = await usuario_repository.get_usuario_by_email(conn, email)
+            if user_data:
+                return UsuarioResponseDTO(
+                    id=user_data['id'],
+                    nome=user_data['nome'],
+                    email=user_data['email']
+                )
+            return None
+        except Exception as e:
+            print_error_details(e)
+            return None
