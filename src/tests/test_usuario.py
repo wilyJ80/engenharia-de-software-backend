@@ -67,6 +67,34 @@ def test_acessar_usuario_unico(mock_get_user_by_id):  #usa autenticacao
     app.dependency_overrides = {}
 
 
+@patch("service.usuario_service.UsuarioService.create_user")
+@patch("service.usuario_service.UsuarioService.update_user")
+def test_editar_usuario(mock_update_user, mock_create_user):  #usa autenticacao
+    id_user_logado = "fake_user_id"
+    app.dependency_overrides[get_current_user] = lambda: id_user_logado
+
+    user_disponivel = usuarios_fake(1)[0]
+    user_disponivel['id'] = id_user_logado
+    mock_create_user.return_value = user_disponivel
+
+    usuario_atualizado = {
+        "id": id_user_logado,
+        "nome": f"{user_disponivel['nome']}Atualizado",
+        "email": f"{user_disponivel['email']}.br",
+        "senha": "nova_senha123"
+    }
+    mock_update_user.return_value = usuario_atualizado
+
+    response = client.put(f"/usuarios/{id_user_logado}", json=usuario_atualizado)
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data['id'] == id_user_logado
+    assert data['nome'] == usuario_atualizado['nome']
+    assert data['email'] == usuario_atualizado['email']
+    app.dependency_overrides = {}
+
+
 @patch("service.usuario_service.UsuarioService.delete_user")
 def test_deletar_usuario(mock_delete_user):  #usa autenticacao
     id_user_logado = "fake_user_id"
