@@ -1,4 +1,4 @@
-from src.db.connection import Connection
+from db.connection import Connection
 
 
 _connection = Connection()

@@ -1,6 +1,6 @@
 import logging
 from psycopg2 import pool
-from src.core.config import settings
+from core.config import settings
 class Connection:
     _instance = None
     _pool = None
