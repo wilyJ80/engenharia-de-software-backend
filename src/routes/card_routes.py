@@ -45,33 +45,37 @@ async def create_card(
         conn_instance.release_conn(conn)
 
 # LISTAR TODOS OS CARDS (ou filtrar)
+# TODO: verificar os filtros do get card
 @router.get(
     "/",
     response_model=List[CardResponseDTO],
     summary="Lista todos os Cards"
 )
 async def list_cards(
-    # service: CardService = Depends(get_card_service),
     status_filtro: Optional[CardStatus] = Query(None, description="Filtra cards por Status"),
     ciclo_id: Optional[str] = Query(None, description="Filtra cards por ID do Ciclo associado")
 ):
     """
     Retorna uma lista de todos os Cards, com opções de filtragem por status ou ID do Ciclo.
     """
-    # cards = service.list(status=status_filtro, ciclo_id=ciclo_id) # Chamada ao serviço
-    # Simulação de dados:
-    card_dummy = CardResponseDTO(
-        id="a1b2c3d4-e5f6-7890-1234-567890abcdef",
-        status=CardStatus.EM_ANDAMENTO,
-        tempo_planejado_horas=10.0,
-        link="http://exemplo.com/card_simulado",
-        descricao="Card Simulado para listagem.",
-        ciclo_id="c-id-123",
-        fase_id="f-id-456",
-        artefato_id="a-id-789",
-        responsavel_id="r-id-012"
-    )
-    return [card_dummy]
+    conn_instance = Connection()
+    conn = conn_instance.get_conn()
+    
+    try:
+        if status_filtro:
+            cards = await CardService.get_cards_by_status(conn, status_filtro)
+        elif ciclo_id:
+            cards = await CardService.get_cards_by_ciclo(conn, ciclo_id)
+        else:
+            cards = await CardService.get_all_cards(conn)
+        return cards
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro interno do servidor"
+        )
+    finally:
+        conn_instance.release_conn(conn)
 
 
 # GET CARD ESPECÍFICO
@@ -82,31 +86,31 @@ async def list_cards(
 )
 async def get_card(
     card_id: str,
-    # service: CardService = Depends(get_card_service)
 ):
     """
-    Retorna os detalhes de um Card específico.
+    Retorna os detalhes de um Card específico por id.
     """
-    # card = service.get_by_id(card_id) # Chamada ao serviço
 
-    # Simulação:
-    if card_id == "a1b2c3d4-e5f6-7890-1234-567890abcdef":
-        return CardResponseDTO(
-            id=card_id,
-            status=CardStatus.A_FAZER,
-            tempo_planejado_horas=5.0,
-            link="http://exemplo.com/card_detalhe",
-            descricao="Detalhes do Card solicitado.",
-            ciclo_id="c-id-123",
-            fase_id="f-id-456",
-            artefato_id="a-id-789",
-            responsavel_id="r-id-012"
-        )
-    else:
+    conn_instance = Connection()
+    conn = conn_instance.get_conn()
+    
+    try:
+        card = await CardService.get_card_by_id(conn, card_id)
+        if not card:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Card não encontrado"
+            )
+        return card
+    except HTTPException:
+        raise
+    except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Card com ID '{card_id}' não encontrado"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro interno do servidor"
         )
+    finally:
+        conn_instance.release_conn(conn)
 
 # ATUALIZAR CARD
 @router.patch(
@@ -117,38 +121,37 @@ async def get_card(
 async def update_card(
     card_id: str,
     card_data: CardUpdateDTO,
-    # service: CardService = Depends(get_card_service)
 ):
     """
     Atualiza um Card existente, permitindo a modificação de um subconjunto de campos.
     """
     # card_atualizado = service.update(card_id, card_data) # Chamada ao serviço
 
-    # Simulação:
-    if card_id != "a1b2c3d4-e5f6-7890-1234-567890abcdef":
-         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Card com ID '{card_id}' não encontrado para atualização"
+    conn_instance = Connection()
+    conn = conn_instance.get_conn()
+    
+    try:
+        update_card = await CardService.update_card(conn, card_id, card_data)
+        if not update_card:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Card não encontrado"
+            )
+        return update_card
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
         )
-
-    # Simulação de merge dos dados
-    dados_atuais = {
-        "id": card_id,
-        "status": CardStatus.A_FAZER,
-        "tempo_planejado_horas": 5.0,
-        "link": "http://exemplo.com/card_detalhe",
-        "descricao": "Detalhes do Card solicitado.",
-        "ciclo_id": "c-id-123",
-        "fase_id": "f-id-456",
-        "artefato_id": "a-id-789",
-        "responsavel_id": "r-id-012"
-    }
-
-    # Atualiza apenas os campos que foram fornecidos
-    campos_atualizaveis = card_data.model_dump(exclude_unset=True, exclude_none=True)
-    dados_atuais.update(campos_atualizaveis)
-
-    return CardResponseDTO(**dados_atuais)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro interno do servidor"
+        )
+    finally:
+        conn_instance.release_conn(conn)
 
 # DELETAR CARD
 @router.delete(

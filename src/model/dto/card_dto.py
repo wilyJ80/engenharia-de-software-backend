@@ -5,7 +5,7 @@ from datetime import datetime
 
 # DTO para Criação (CREATE)
 class CardCreateDTO(BaseModel):
-    status: CardStatus = Field(..., description="Status do card", example="PENDING")
+    status: CardStatus = Field(..., description="Status do card", example="a_fazer")
     tempo_planejado_horas: float = Field(..., description="Tempo de execução planejado para aquele card", example=4.5)
     link: str = Field(..., description="Link associado ao card", example="http://exemplo.com/tarefa/123")
     descricao: str = Field(..., description="Descrição detalhada do card", example="Implementar a funcionalidade de login via OAuth.")
@@ -33,5 +33,5 @@ class CardResponseDTO(BaseModel):
     fase_id: str = Field(..., description="Identificador da fase associado")
     artefato_id: str = Field(..., description="Identificador do artefato associado")
     responsavel_id: str = Field(..., description="Identificador do responsável associado")
-    created_at: datetime = Field(..., description="Data de criação do registro")
-    updated_at: Optional[datetime] = Field(None, description="Data da última atualização do registro")
+    # created_at: datetime = Field(..., description="Data de criação do registro")
+    # updated_at: Optional[datetime] = Field(None, description="Data da última atualização do registro")
