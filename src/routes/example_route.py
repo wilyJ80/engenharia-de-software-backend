@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from model.exemple import Example
+from model.example import Example
 
-router = APIRouter(prefix="/exemple", tags=['example'])
+router = APIRouter(prefix="/example", tags=['example'])
 
 @router.get("/", response_model=Example)
 async def get_exemplo():
