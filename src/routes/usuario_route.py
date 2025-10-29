@@ -2,14 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from datetime import timedelta
 from typing import List
 
-from model.usuario_2 import UsuarioCreate, UsuarioResponse, UsuarioLogin, Token
+from model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO, UsuarioLoginDTO
+from model.token import Token
 from service.usuario_service import UsuarioService
 from core.auth import create_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
 
 router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
-@router.post("/registro", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
-async def criar_usuario(usuario: UsuarioCreate):
+@router.post("/registro", response_model=UsuarioResponseDTO, status_code=status.HTTP_201_CREATED)
+async def criar_usuario(usuario: UsuarioCreateDTO):
     """Registra um novo usuário."""
     try:
         return UsuarioService.create_user(usuario)
@@ -20,7 +21,7 @@ async def criar_usuario(usuario: UsuarioCreate):
         )
 
 @router.post("/login", response_model=Token)
-async def login_usuario(usuario_login: UsuarioLogin):
+async def login_usuario(usuario_login: UsuarioLoginDTO):
     """Autentica um usuário e retorna um token JWT."""
     user = UsuarioService.authenticate_user(usuario_login.email, usuario_login.senha)
     
@@ -38,7 +39,7 @@ async def login_usuario(usuario_login: UsuarioLogin):
     
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/me", response_model=UsuarioResponse)
+@router.get("/me", response_model=UsuarioResponseDTO)
 async def obter_usuario_atual(current_user_id: str = Depends(get_current_user)):
     """Obtém as informações do usuário atualmente autenticado."""
     user = UsuarioService.get_user_by_id(current_user_id)
@@ -49,12 +50,12 @@ async def obter_usuario_atual(current_user_id: str = Depends(get_current_user)):
         )
     return user
 
-@router.get("/", response_model=List[UsuarioResponse])
+@router.get("/", response_model=List[UsuarioResponseDTO])
 async def listar_usuarios(current_user_id: str = Depends(get_current_user)):
     """Lista todos os usuários (requer autenticação)."""
     return UsuarioService.get_all_users()
 
-@router.get("/{user_id}", response_model=UsuarioResponse)
+@router.get("/{user_id}", response_model=UsuarioResponseDTO)
 async def obter_usuario(user_id: str, current_user_id: str = Depends(get_current_user)):
     """Obtém um usuário pelo ID (requer autenticação)."""
     user = UsuarioService.get_user_by_id(user_id)
@@ -65,10 +66,10 @@ async def obter_usuario(user_id: str, current_user_id: str = Depends(get_current
         )
     return user
 
-@router.put("/{user_id}", response_model=UsuarioResponse)
+@router.put("/{user_id}", response_model=UsuarioResponseDTO)
 async def atualizar_usuario(
     user_id: str, 
-    usuario_data: UsuarioCreate,
+    usuario_data: UsuarioCreateDTO,
     current_user_id: str = Depends(get_current_user)
 ):
     """Atualiza um usuário (requer autenticação)."""
