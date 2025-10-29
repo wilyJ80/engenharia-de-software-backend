@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from passlib.context import CryptContext
 import jwt
 from jwt import InvalidTokenError
 import os
@@ -10,27 +9,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Configurações JWT
+# Configurações JWT carregadas do .env
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-# Contexto de criptografia
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 # Esquema de segurança
 security = HTTPBearer()
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verifica se a senha em texto plano corresponde ao hash."""
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password: str) -> str:
-    """Gera o hash da senha."""
-    # Trunca a senha se for muito longa (bcrypt tem limite de 72 bytes)
-    if len(password.encode('utf-8')) > 72:
-        password = password.encode('utf-8')[:72].decode('utf-8', errors='ignore')
-    return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     """Cria um token de acesso JWT."""
@@ -38,7 +23,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

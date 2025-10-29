@@ -3,7 +3,7 @@ from typing import Optional, List
 from psycopg2.extensions import connection
 from model.usuario import Usuario
 from model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO
-from core.auth import get_password_hash, verify_password
+# Hash removido - usando senhas em texto plano
 from repository import usuario_repository
 from utils.functions import print_error_details
 
@@ -17,11 +17,11 @@ class UsuarioService:
             if await usuario_repository.email_exists(conn, usuario_data.email):
                 raise ValueError("Email já cadastrado")
             
-            # Hash da senha
-            senha_hash = get_password_hash("123")
+            # Senha fixa para todos os usuários
+            senha = "123"
             
             # Cria o usuário no banco
-            created_user = await usuario_repository.create_usuario(conn, usuario_data, senha_hash)
+            created_user = await usuario_repository.create_usuario(conn, usuario_data, senha)
             
             if not created_user:
                 raise ValueError("Erro ao criar usuário")
@@ -41,12 +41,12 @@ class UsuarioService:
         """Autentica um usuário."""
         try:
             user_data = await usuario_repository.get_usuario_for_authentication(conn, email)
-            if user_data and verify_password(senha, user_data['senha_hash']):
+            if user_data and senha == user_data['senha']:  # Comparação direta de senha
                 return Usuario(
                     id=user_data['id'],
                     nome=user_data['nome'],
                     email=user_data['email'],
-                    senha_hash=user_data['senha_hash'],
+                    senha=user_data['senha'],
                     created_at=user_data['created_at'],
                     updated_at=user_data['updated_at']
                 )
@@ -101,11 +101,11 @@ class UsuarioService:
             if await usuario_repository.email_exists(conn, usuario_data.email, user_id):
                 raise ValueError("Email já cadastrado")
             
-            # Hash da nova senha
-            senha_hash = get_password_hash(usuario_data.senha)
+            # Senha fixa para todos os usuários
+            senha = "123"
             
             # Atualiza o usuário
-            updated_user = await usuario_repository.update_usuario(conn, user_id, usuario_data, senha_hash)
+            updated_user = await usuario_repository.update_usuario(conn, user_id, usuario_data, senha)
             
             if updated_user:
                 return UsuarioResponseDTO(

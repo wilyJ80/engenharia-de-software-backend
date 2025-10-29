@@ -136,13 +136,7 @@ async def atualizar_usuario(
     usuario_data: UsuarioCreateDTO,
     current_user_id: str = Depends(get_current_user)
 ):
-    """Atualiza um usuário (requer autenticação)."""
-    if user_id != current_user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Você só pode atualizar seus próprios dados"
-        )
-    
+    """Atualiza um usuário (requer autenticação). Qualquer usuário autenticado pode atualizar qualquer usuário."""
     conn_instance = Connection()
     conn = conn_instance.get_conn()
     
@@ -174,13 +168,7 @@ async def deletar_usuario(
     user_id: str,
     current_user_id: str = Depends(get_current_user)
 ):
-    """Deleta um usuário (requer autenticação)."""
-    if user_id != current_user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Você só pode deletar sua própria conta"
-        )
-    
+    """Deleta um usuário (requer autenticação). Qualquer usuário autenticado pode deletar qualquer usuário."""
     conn_instance = Connection()
     conn = conn_instance.get_conn()
     
