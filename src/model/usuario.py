@@ -10,4 +10,3 @@ class Usuario(Base):
     nome: str = Field(..., description="Nome do usuário")
     email: EmailStr = Field(..., description="Email do usuário")
     senha_hash: str = Field(..., description="Hash da senha do usuário")
-

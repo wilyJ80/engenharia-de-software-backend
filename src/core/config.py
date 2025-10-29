@@ -15,7 +15,7 @@ class Settings:
     POSTGRES_USER     : str = "admin"
     POSTGRES_PASSWORD : str = "admin123"
     POSTGRES_HOST     : str = "postgres"
-    POSTGRES_PORT     : str = "5434" # PORTA PADRÃO DO POSTGRE É 5434
+    POSTGRES_PORT     : str = "5432" # PORTA PADRÃO DO POSTGRE É 5434
     POSTGRES_DATABASE : str = "appdb"
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}"
 

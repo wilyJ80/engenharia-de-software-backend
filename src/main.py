@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from src.routes import artefatos_router, fase_routes
+from routes.artefatos_router import router as artefatos_router
+from routes.fase_routes import fase_router as fase_routes
 import uvicorn
 
 # from routes.example_route import router as exampleRouter
