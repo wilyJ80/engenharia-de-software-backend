@@ -64,13 +64,13 @@ async def projeto_name_exists(conn: connection, nome: str, exclude_id: Optional[
 async def create_projeto(conn: connection, projeto_data: dict) -> Optional[RealDictRow]:
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
         try:
-            projeto_id = str(uuid.uuid4())
+            
             now = datetime.utcnow()
             cursor.execute("""
-                INSERT INTO projeto (id, nome, descritivo, created_at)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO projeto (nome, descritivo, created_at)
+                VALUES (%s, %s, %s)
                 RETURNING id, nome, descritivo, created_at;
-            """, (projeto_id, projeto_data.get('nome'), projeto_data.get('descritivo'), now))
+            """, (projeto_data.get('nome'), projeto_data.get('descritivo'), now))
 
             created = cursor.fetchone()
             conn.commit()

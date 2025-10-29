@@ -2,14 +2,14 @@ from fastapi import APIRouter, status, Depends, HTTPException
 from psycopg2.extensions import connection
 
 from db.database import get_db
-from model.projeto import Projeto, ProjetoResponse
+from model.projeto import Projeto, ProjetoResponse, ProjetoBase
 from service.projeto_service import ProjetoService
 
 router = APIRouter(prefix="/projetos", tags=['projetos'])
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=Projeto)
-async def create_projeto(projeto: ProjetoResponse, db: connection = Depends(get_db)):
+async def create_projeto(projeto: ProjetoBase, db: connection = Depends(get_db)):
     try:
         created = await ProjetoService.create_projeto(db, projeto.dict())
         if not created:
@@ -46,7 +46,7 @@ async def get_projeto_by_id(projeto_id: str, db: connection = Depends(get_db)):
 
 
 @router.put("/{projeto_id}", response_model=Projeto)
-async def update_projeto(projeto_id: str, projeto: ProjetoResponse, db: connection = Depends(get_db)):
+async def update_projeto(projeto_id: str, projeto: ProjetoBase, db: connection = Depends(get_db)):
     try:
         updated = await ProjetoService.update_projeto(db, projeto_id, projeto.dict())
         if not updated:
