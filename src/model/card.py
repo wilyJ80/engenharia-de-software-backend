@@ -3,6 +3,7 @@ from .card_status import CardStatus
 from .base import Base
 
 class CardModel(Base):
+    id: str = Field(..., description="Identificador único do card")
     status : CardStatus = Field(description="Status do card")
     tempo_planejado_horas : float = Field(description="Tempo de execução planejado para aquele card")
     link: str = Field(description="Link")
