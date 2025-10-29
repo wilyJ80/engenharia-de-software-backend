@@ -1,7 +1,7 @@
 from http.client import HTTPException
 from fastapi import APIRouter, status, Depends, Response
-from src.model.artefato import Artefato, ArtefatoBase, ArtefatoResponse
-from src.service import artefato_service
+from model.artefato import Artefato, ArtefatoBase, ArtefatoResponse
+from service import artefato_service
 
 router = APIRouter(prefix="/artefatos", tags=['artefatos'])
 
