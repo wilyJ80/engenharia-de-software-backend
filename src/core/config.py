@@ -12,11 +12,11 @@ class Settings:
     PROJECT_NAME   : str = "supera"
     PROJECT_VERSION: str = "1.0.0"
 
-    POSTGRES_USER     : str = os.getenv("POSTGRES_USER")
-    POSTGRES_PASSWORD : str = os.getenv("POSTGRES_PASSWORD")
-    POSTGRES_HOST     : str = os.getenv("POSTGRES_HOST","localhost")
-    POSTGRES_PORT     : str = os.getenv("POSTGRES_PORT", "5434") # PORTA PADRÃO DO POSTGRE É 5434
-    POSTGRES_DATABASE : str = os.getenv("POSTGRES_DATABASE","tdd")
+    POSTGRES_USER     : str = "admin"
+    POSTGRES_PASSWORD : str = "admin123"
+    POSTGRES_HOST     : str = "postgres"
+    POSTGRES_PORT     : str = "5434" # PORTA PADRÃO DO POSTGRE É 5434
+    POSTGRES_DATABASE : str = "appdb"
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}"
 
 settings = Settings()
