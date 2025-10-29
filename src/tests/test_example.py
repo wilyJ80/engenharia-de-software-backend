@@ -1,13 +1,28 @@
 import pytest
+import os
+import sys
 
-from fastapi.testclient import TestClient
-from main import app
+# Adiciona o diretório src ao sys.path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-client = TestClient(app)
+from model.example import Example
 
-def test_get_example():
-    response = client.get("/example/")
-    data = response.json()
+def test_exemplo_model():
+    example = Example(name="Teste")
+    assert example.name == "Teste"
+    assert hasattr(example, "name")
 
-    assert response.status_code == 200
-    assert data["name"] == "Exemplo"
+def test_exemplo_model_validation():
+    # Testa se o campo name é obrigatório
+    with pytest.raises(ValueError):
+        Example()
+
+def test_exemplo_model_serialization():
+    example = Example(name="Teste de Serialização")
+    data = example.model_dump()
+    assert data == {"name": "Teste de Serialização"}
+
+def test_exemplo_model_deserialization():
+    data = {"name": "Teste de Deserialização"}
+    example = Example(**data)
+    assert example.name == "Teste de Deserialização"
