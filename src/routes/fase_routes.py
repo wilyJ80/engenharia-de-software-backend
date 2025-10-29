@@ -85,7 +85,6 @@ async def update_fase(
 
 @fase_router.delete(
     "/{fase_id}", 
-    response_model=FaseResponse,
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Deleta uma fase pelo ID",
 )
