@@ -9,3 +9,11 @@ async def get_all_fases(conn: connection):
                     """)
         
         return cursor.fetchall()
+    
+# FIND BY ID
+
+# |=======| POST
+
+# PUT
+
+# DELETE
