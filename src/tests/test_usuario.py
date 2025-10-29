@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 from unittest.mock import patch
 import uuid
 
@@ -56,3 +57,45 @@ def test_acessar_usuario_unico(mock_get_user_by_id):  #usa autenticacao
     assert response.status_code == 200
     assert data == user_disponivel
     app.dependency_overrides = {}
+=======
+import pytest
+from model.dto.usuario_dto import UsuarioCreateDTO, UsuarioResponseDTO
+from routes.usuario_route import UsuarioService
+from core.auth import verify_password
+
+@pytest.fixture
+def usuario_base():
+    return UsuarioCreateDTO(
+        nome="Eduardo Américo",
+        email="eduardo@example.com",
+        senha="12345678"
+    )
+
+def test_criar_usuario_sucesso(mocker, usuario_base):
+    # Mocka o método create_user
+    fake_id = "1234"
+    fake_senha_hash = "hashed_12345678"
+    fake_user = UsuarioResponseDTO(id=fake_id, nome=usuario_base.nome, email=usuario_base.email)
+
+    mocker.patch.object(
+        UsuarioService,
+        'create_user',
+        return_value=fake_user
+    )
+
+    usuario_resp = UsuarioService.create_user(usuario_base)
+    assert usuario_resp.nome == usuario_base.nome
+    assert usuario_resp.email == usuario_base.email
+    assert hasattr(usuario_resp, "id")
+
+def test_criar_usuario_email_duplicado(mocker, usuario_base):
+    # Mocka o método create_user para lançar ValueError
+    mocker.patch.object(
+        UsuarioService,
+        'create_user',
+        side_effect=ValueError("Email já cadastrado")
+    )
+
+    with pytest.raises(ValueError, match="Email já cadastrado"):
+        UsuarioService.create_user(usuario_base)
+>>>>>>> Stashed changes
