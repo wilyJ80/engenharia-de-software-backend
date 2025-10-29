@@ -3,7 +3,6 @@ from pydantic import BaseModel, Field, EmailStr
 class UsuarioCreateDTO(BaseModel):
     nome: str = Field(..., description="Nome do usuário")
     email: EmailStr = Field(..., description="Email do usuário")
-    senha: str = Field(..., description="Senha do usuário", example="123456", min_length=3)
 
 class UsuarioLoginDTO(BaseModel):
     email: EmailStr = Field(..., description="Email do usuário", example="alan.victor@email.com")
