@@ -1,13 +1,13 @@
 from src.model.artefato import Artefato, ArtefatoBase, ArtefatoResponse
 from src.repository import artefato_repository
-
+from psycopg2.extensions import connection
 
 async def create_artefato(
-    #db,
+    db: connection,
     artefato: ArtefatoBase,
 ) -> Artefato | None:
 
-    existing_artefato = await artefato_repository.get_artefato_by_name(artefato.nome)
+    existing_artefato = await artefato_repository.get_artefato_by_name(db, artefato.nome)
     if existing_artefato:
         return None
 
@@ -15,18 +15,18 @@ async def create_artefato(
 
     return inserted_artefato
 
-async def get_all_artefatos() -> ArtefatoResponse | None:
-    return await artefato_repository.get_all_artefatos()
+async def get_all_artefatos(db: connection,) -> ArtefatoResponse | None:
+    return await artefato_repository.get_all_artefatos(db)
 
-async def get_artefato_by_id(artefato_id: str) -> ArtefatoResponse | None:
-    return await artefato_repository.get_artefato_by_id(artefato_id)
+async def get_artefato_by_id(db: connection, artefato_id: str) -> ArtefatoResponse | None:
+    return await artefato_repository.get_artefato_by_id(db, artefato_id)
 
-async def delete_artefato(artefato_id: str) -> ArtefatoResponse | None:
-    return await artefato_repository.delete_artefato(artefato_id)
+async def delete_artefato(db: connection, artefato_id: str) -> ArtefatoResponse | None:
+    return await artefato_repository.delete_artefato(db, artefato_id)
 
-async def update_artefato(artefato_id: str, artefato: ArtefatoBase) -> ArtefatoResponse | None:
-    existing_artefato = await artefato_repository.get_artefato_by_name(artefato.nome)
+async def update_artefato(db: connection, artefato_id: str, artefato: ArtefatoBase) -> ArtefatoResponse | None:
+    existing_artefato = await artefato_repository.get_artefato_by_name(db, artefato.nome)
     if existing_artefato:
         return None
     
-    return await artefato_repository.update_artefato(artefato_id, artefato)
+    return await artefato_repository.update_artefato(db, artefato_id, artefato)
