@@ -53,3 +53,13 @@ async def update_fase(conn: connection, fase_id: int, fase: FaseBase) -> RealDic
 
 
 # DELETE
+async def delete_fase(conn: connection, fase_id: int) -> RealDictRow | None:
+    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+        try:
+            cursor.execute("""
+                            DELETE FROM fase WHERE id = %s;
+                        """)
+            cursor.execute(cursor, (fase_id,))
+            return cursor.fetchone()
+        except Exception as e:
+            print_error_details(e)
