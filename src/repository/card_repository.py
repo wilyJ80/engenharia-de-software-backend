@@ -109,7 +109,7 @@ async def update_card(
             
             # Mapeamento do Enum para string antes de construir a query
             if 'status' in update_data and update_data['status'] is not None:
-                update_data['status'] = update_data['status'].value
+                update_data['status'] = update_data['status']
 
             for key, value in update_data.items():
                 # A chave 'id' é ignorada, se presente
