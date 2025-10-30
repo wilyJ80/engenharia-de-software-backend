@@ -166,12 +166,22 @@ async def delete_card(
     """
     Deleta permanentemente um Card do sistema.
     """
-    # sucesso = service.delete(card_id) # Chamada ao serviço
-    # Simulação:
-    if card_id == "card_inexistente":
+    conn_instance = Connection()
+    conn = conn_instance.get_conn()
+    
+    try:
+        deleted = await CardService.delete_card(conn, card_id)
+        if not deleted:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Card não encontrado"
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Card com ID '{card_id}' não encontrado para exclusão"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro interno do servidor"
         )
-    # Retorna 204 No Content se a exclusão for bem-sucedida
-    return
+    finally:
+        conn_instance.release_conn(conn)
