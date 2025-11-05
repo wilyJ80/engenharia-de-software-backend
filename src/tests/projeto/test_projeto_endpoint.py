@@ -111,9 +111,17 @@ def test_update_projeto(mock_update, mock_db):
 
 
 @patch("routes.projeto_router.get_db", new_callable=AsyncMock)
-@patch("service.projeto_service.ProjetoService.get_all_projetos", new_callable=AsyncMock)
+@patch("service.projeto_service.ProjetoService.delete_projeto", new_callable=AsyncMock)
 def test_delete_projeto(mock_delete, mock_db):
-    pass
+    projeto = projetos_fake(1)[0]
+    mock_db.return_value = "fake_db"
+    mock_delete.return_value = projeto
+
+    response = client.delete(f"/projetos/{projeto['id']}")
+
+    assert response.status_code == 204
+    assert response.text == ''
+    mock_delete.assert_called_once()
 
 
 #ver um nao existente
