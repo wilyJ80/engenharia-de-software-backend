@@ -1,4 +1,5 @@
 import random
+import traceback
 from uuid import UUID
 from fastapi import APIRouter, HTTPException, status, Query
 from typing import List, Optional
@@ -48,7 +49,7 @@ async def create_card(
 # TODO: verificar os filtros do get card
 @router.get(
     "/",
-    response_model=List[CardResponseDTO],
+    response_model=List,
     summary="Lista todos os Cards"
 )
 async def list_cards(
