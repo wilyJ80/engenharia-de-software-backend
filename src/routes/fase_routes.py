@@ -1,7 +1,7 @@
 import stat
 from fastapi import APIRouter, status, Depends, Request, HTTPException
 from psycopg2.extensions import connection
-from model.fase import FaseBase, Fase, FaseCreate, FaseResponse
+from model.fase import FaseBase, Fase, FaseCreate, FaseResponse, FaseUpdate
 from service.fase_service import FaseService
 from db.database import get_db
 
@@ -67,8 +67,8 @@ async def get_fase_by_id(fase_id: str, db: connection = Depends(get_db)):
     summary="Atualiza uma fase pelo ID",
 )
 async def update_fase(
-    fase_id: int, 
-    fase: FaseBase, 
+    fase_id: str, 
+    fase: FaseUpdate, 
     db: connection = Depends(get_db)
 ):
     updated_fase = await FaseService.update_fase(db, fase_id, fase)

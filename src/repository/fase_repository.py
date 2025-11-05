@@ -1,7 +1,7 @@
 from psycopg2.extras import RealDictCursor
 from psycopg2.extensions import connection
 from utils.functions import print_error_details
-from model.fase import FaseBase
+from model.fase import FaseBase, FaseUpdate
 from psycopg2.extras import RealDictRow
 from psycopg2.extras import execute_values
 
@@ -116,9 +116,9 @@ def create_fase(
     
     return None
 # PUT
-def update_fase(
+async def update_fase(
         conn: connection, 
-        fase_id: int, fase: FaseBase
+        fase_id: int, fase: FaseUpdate
 ) -> RealDictRow | None:
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
         try:
@@ -141,7 +141,7 @@ def update_fase(
                 new_associations = [(fase_id, artefato_id) for artefato_id in fase.artefato_ids]
                 execute_values(
                     cursor,
-                    "INSERT INTO fase_artefato (fase_id, artefato_id) VALUES %s",
+                    "INSERT INTO faseartefato (fase_id, artefato_id) VALUES %s",
                     new_associations
                 )
 
@@ -152,7 +152,7 @@ def update_fase(
             print_error_details(e)
             raise e
 
-    return get_fase_by_id(conn, fase_id)
+    return await get_fase_by_id(conn, fase_id)
 
 
 # DELETE
