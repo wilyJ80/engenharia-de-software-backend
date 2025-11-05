@@ -61,6 +61,20 @@ def test_get_all_projetos(mock_get_all, mock_db):
 
 
 @patch("routes.projeto_router.get_db", new_callable=AsyncMock)
+@patch("service.projeto_service.ProjetoService.get_all_projetos", new_callable=AsyncMock)
+def test_get_all_projetos_vazio(mock_get_all, mock_db):
+    projetos = []
+    mock_db.return_value = "fake_db"
+    mock_get_all.return_value = projetos
+    response = client.get("/projetos/")
+    data = response.json()
+
+    assert response.status_code == 200
+    assert len(data) == 0
+    assert data == projetos
+
+
+@patch("routes.projeto_router.get_db", new_callable=AsyncMock)
 @patch("service.projeto_service.ProjetoService.get_projeto_by_id", new_callable=AsyncMock)
 def test_get_projeto_by_id(mock_get_one, mock_db):
     projeto = projetos_fake(1)[0]
