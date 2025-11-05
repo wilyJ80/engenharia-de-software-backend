@@ -78,6 +78,20 @@ def test_get_projeto_by_id(mock_get_one, mock_db):
 
 
 @patch("routes.projeto_router.get_db", new_callable=AsyncMock)
+@patch("service.projeto_service.ProjetoService.get_projeto_by_id", new_callable=AsyncMock)
+def test_get_projeto_nao_encontrado(mock_get_one, mock_db):
+    mock_db.return_value = "fake_db"
+    mock_get_one.return_value = None
+    id_fake = str(uuid.uuid4())
+
+    response = client.get(f"/projetos/{id_fake}")
+
+    assert response.status_code == 404
+    assert "Projeto não encontrado" in response.json()["detail"]
+    mock_get_one.assert_called_once
+
+
+@patch("routes.projeto_router.get_db", new_callable=AsyncMock)
 @patch("service.projeto_service.ProjetoService.update_projeto", new_callable=AsyncMock)
 def test_update_projeto(mock_update, mock_db):
     projeto = projetos_fake(1)[0]
