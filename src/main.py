@@ -5,9 +5,9 @@ from routes.artefatos_router import router as artefatos_router
 from routes.fase_routes import fase_router as fase_routes
 from routes.ciclo_routes import router as ciclo_router
 from routes.projeto_router import router as projeto_router
+from routes.card_routes import router as card_router
 import uvicorn
 
-# from routes.example_route import router as exampleRouter
 from routes.usuario_route import router as usuarioRouter
 
 # Configuração da aplicação FastAPI
@@ -47,12 +47,13 @@ async def health_check():
     return {"status": "healthy", "service": "usuario-api"}
 
 # Inclusão das rotas
-# app.include_router(exampleRouter)
+
 app.include_router(usuarioRouter)
 app.include_router(artefatos_router)
 app.include_router(fase_routes)
 app.include_router(ciclo_router)
 app.include_router(projeto_router)
+app.include_router(card_router)
 
 # Manipulador de exceções global
 @app.exception_handler(Exception)
