@@ -6,7 +6,7 @@ import os
 import sys
 
 # Adiciona o diretório src ao sys.path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 # Mock das conexões de banco antes de importar a aplicação
 with patch('db.connection.Connection'):
