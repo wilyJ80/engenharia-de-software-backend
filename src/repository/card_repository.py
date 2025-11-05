@@ -91,6 +91,25 @@ async def create_card(
             print_error_details(e)
             return None
 
+def update_card_progress(card, new_status: str):
+    
+    started_time = card.get("started_time")
+    progress = card.get("progress")
+    
+    try:
+        card_current_status = card.get("status")
+        
+        if card_current_status != new_status:
+            if new_status == "em_andamento":
+                started_time = datetime.utcnow()
+            elif new_status != "em_andamento":
+                progress = datetime.utcnow() - started_time
+                started_time = None
+        
+        return started_time, progress
+        
+    except Exception as e:
+        raise e
 
 # |=======| ATUALIZAR CARD (PATCH) |=======|
 async def update_card(
@@ -103,13 +122,17 @@ async def update_card(
         try:
             now = datetime.utcnow()
             
+            current_card = await get_card_by_id(conn, card_id)
+            
             # 1. Cria a query de forma dinâmica
             set_clauses = []
             values = []
             
             # Mapeamento do Enum para string antes de construir a query
             if 'status' in update_data and update_data['status'] is not None:
-                update_data['status'] = update_data['status']
+                update_data['status'] = update_data['status'].value
+                update_data['started_time'], update_data['progress'] = update_card_progress(card=current_card, new_status=update_data['status'])
+                
 
             for key, value in update_data.items():
                 # A chave 'id' é ignorada, se presente

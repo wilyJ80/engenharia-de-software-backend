@@ -63,6 +63,8 @@ class CardService:
             print_error_details(e)
             return []
 
+
+    
     @staticmethod
     async def update_card(conn: connection, card_id: str, card_data: CardUpdateDTO) -> Optional[CardResponseDTO]:
         """Atualiza um card. Aceita apenas os campos fornecidos no DTO."""
@@ -71,6 +73,8 @@ class CardService:
             existing_card = await card_repository.get_card_by_id(conn, card_id)
             if not existing_card:
                 return None # Retorna None se não encontrar
+            
+            print(existing_card)
 
             # 2. Converte o DTO para um dicionário, ignorando campos None
             update_data = card_data.model_dump(exclude_none=True)
