@@ -65,6 +65,20 @@ def test_get_all_artefatos(mock_get_all, mock_db):
 
 
 @patch("routes.artefatos_router.get_db", new_callable=AsyncMock)
+@patch("service.artefato_service.get_all_artefatos", new_callable=AsyncMock)
+def test_get_all_artefatos_vazio(mock_get_all, mock_db):  
+    artefatos = []
+    mock_db.return_value = "fake_db"
+    mock_get_all.return_value = artefatos
+
+    response = client.get("/artefatos/")
+
+    data = response.json()
+    assert response.status_code == 404
+    assert "Nenhum artefato encontrado" in response.json()["detail"]
+
+
+@patch("routes.artefatos_router.get_db", new_callable=AsyncMock)
 @patch("service.artefato_service.get_artefato_by_id", new_callable=AsyncMock)
 def test_get_artefato_by_id(mock_get_one, mock_db): 
     artefato = artefatos_fake(1)[0]
