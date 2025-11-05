@@ -1,7 +1,6 @@
 import pytest
-from unittest.mock import patch, MagicMock, ANY
+from unittest.mock import patch
 import uuid
-from datetime import datetime
 import os
 import sys
 
