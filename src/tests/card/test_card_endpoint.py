@@ -1,7 +1,6 @@
 import pytest
-from unittest.mock import patch, MagicMock, ANY
+from unittest.mock import patch, ANY
 import uuid
-from datetime import datetime
 import os
 import sys
 
@@ -296,6 +295,7 @@ def test_deletar_card_nao_encontrado(mock_delete_card):
 
     assert response.status_code == 404
     assert "Card não encontrado" in response.json()["detail"]
+
 
 # Testes de Serviço (Unit tests)
 def test_criar_card_sucesso_service(mocker, card_create):
