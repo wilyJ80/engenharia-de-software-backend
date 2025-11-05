@@ -14,10 +14,10 @@ from routes.usuario_route import router as usuarioRouter
 app = FastAPI(
     title="API Backend - Sistema de Gerenciamento de Projetos",
     description="API para gerenciamento de usuários, ciclos, fases e artefatos com autenticação JWT e operações CRUD completas",
-    version="1.0.0",
+    version="1.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    openapi_url="/openapi.json",
 )
 
 # Configuração CORS para desenvolvimento
@@ -29,6 +29,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Endpoint raiz
 @app.get("/", tags=["Health Check"])
 async def root():
@@ -36,15 +37,17 @@ async def root():
     return {
         "message": "API Backend está funcionando!",
         "status": "online",
-        "version": "1.0.0",
-        "docs": "/docs"
+        "version": "1.1.0",
+        "docs": "/docs",
     }
+
 
 # Endpoint de health check
 @app.get("/health", tags=["Health Check"])
 async def health_check():
     """Endpoint para verificar se a API está funcionando"""
     return {"status": "healthy", "service": "usuario-api"}
+
 
 # Inclusão das rotas
 
@@ -55,6 +58,7 @@ app.include_router(ciclo_router)
 app.include_router(projeto_router)
 app.include_router(card_router)
 
+
 # Manipulador de exceções global
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
@@ -63,16 +67,11 @@ async def global_exception_handler(request, exc):
         status_code=500,
         content={
             "message": "Erro interno do servidor",
-            "error": str(exc) if app.debug else "Internal server error"
-        }
+            "error": str(exc) if app.debug else "Internal server error",
+        },
     )
+
 
 # Configuração para executar diretamente
 if __name__ == "__main__":
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
-    )
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")
