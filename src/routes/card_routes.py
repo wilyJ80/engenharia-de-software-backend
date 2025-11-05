@@ -7,6 +7,7 @@ from typing import List, Optional
 from model.dto.card_dto import CardCreateDTO, CardResponseDTO, CardStatus, CardUpdateDTO
 from service.card_service import CardService
 from db.connection import Connection
+from model.card import StatusModel
 
 
 router = APIRouter(prefix="/card", tags=["card"])
@@ -186,3 +187,14 @@ async def delete_card(
         )
     finally:
         conn_instance.release_conn(conn)
+
+
+@router.patch("/alterarStatus/{card_id}")
+async def patch_alterar_status(card_id: str, status: StatusModel):
+    conn_instance = Connection()
+    conn = conn_instance.get_conn()
+    try:
+        updated_card = await CardService.alterar_status(conn, card_id, status)
+        return {"message": "Status atualizado com sucesso", "card": updated_card}
+    finally:
+        conn.close()

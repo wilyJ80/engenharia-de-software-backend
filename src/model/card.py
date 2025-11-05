@@ -1,4 +1,4 @@
-from pydantic import Field
+from pydantic import Field, BaseModel
 from datetime import datetime
 
 from .card_status import CardStatus
@@ -16,3 +16,7 @@ class CardModel(Base):
     responsavel_id: str = Field(..., description="Identificador do responsável associado")
     started: datetime = Field(description="Data de início do andamento do card", default=None)
     progress: datetime = Field(description="Progresso do andamento das atividades do card", default=None)
+
+class StatusModel(BaseModel):
+    status: str = Field(description="Status do card")
+    tempo_planejado_horas : float = Field(description="Tempo de execução planejado para aquele card")

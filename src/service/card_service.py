@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 from psycopg2.extensions import connection
-from model.card import CardModel 
+from model.card import CardModel, StatusModel 
 from model.dto.card_dto import CardCreateDTO, CardUpdateDTO, CardResponseDTO, CardResponseFiltroCicloDTO
 from repository import card_repository, ciclo_repository
 from utils.functions import print_error_details
@@ -146,6 +146,14 @@ class CardService:
         except Exception as e:
             print_error_details(e)
             return []
+
+    async def alterar_status(conn: connection, card_id: str, status_data: StatusModel):
+        try:
+            updated_card = await card_repository.update_card_status(conn, card_id, status_data.status)
+            return updated_card
+        except Exception as e:
+            print_error_details(e)
+            raise e
 
     @staticmethod
     def _map_to_response_dto(card_data: dict) -> CardResponseDTO | CardResponseFiltroCicloDTO:

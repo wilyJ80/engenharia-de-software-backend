@@ -252,3 +252,24 @@ async def get_cards_by_responsavel(
             raise e
         
 # TODO: get card by fase; get card by projeto
+
+async def update_card_status(conn: connection, card_id: str, status: str) -> Optional[dict]:
+    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+        try:
+            cursor.execute("""
+                UPDATE card
+                SET 
+                    status = %s,
+                    updated_at = NOW()
+                WHERE id = %s
+                RETURNING id, status, updated_at;
+            """, (status, card_id))
+            
+            updated_card = cursor.fetchone()
+            conn.commit()
+            return updated_card
+        
+        except Exception as e:
+            print_error_details(e)
+            conn.rollback()
+            raise e
