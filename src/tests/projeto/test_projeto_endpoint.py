@@ -78,9 +78,36 @@ def test_get_projeto_by_id(mock_get_one, mock_db):
 
 
 @patch("routes.projeto_router.get_db", new_callable=AsyncMock)
-@patch("service.projeto_service.ProjetoService.get_all_projetos", new_callable=AsyncMock)
+@patch("service.projeto_service.ProjetoService.update_projeto", new_callable=AsyncMock)
 def test_update_projeto(mock_update, mock_db):
-    pass
+    projeto = projetos_fake(1)[0]
+    updated_nome = "Nome Atualizado"
+    updated_descritivo = "Descrição Atualizada"
+
+    projeto_atualizado = {
+        "id": projeto["id"],
+        "nome": updated_nome,
+        "descritivo": updated_descritivo,
+        "created_at": projeto["created_at"],
+        "updated_at": datetime.now().isoformat()
+    }
+
+
+    mock_db.return_value = "fake_db"
+    mock_update.return_value = projeto_atualizado
+
+    response = client.put(f"/projetos/{projeto['id']}", json={
+        "nome": updated_nome,
+        "descritivo": updated_descritivo
+    })
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["id"] == projeto["id"]
+    assert data["nome"] == updated_nome
+    assert data["descritivo"] == updated_descritivo
+    assert data["updated_at"] != projeto["updated_at"]
+    assert data["created_at"] == projeto["created_at"]
 
 
 @patch("routes.projeto_router.get_db", new_callable=AsyncMock)
