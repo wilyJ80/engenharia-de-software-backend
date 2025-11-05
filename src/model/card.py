@@ -1,4 +1,6 @@
 from pydantic import Field
+from datetime import datetime
+
 from .card_status import CardStatus
 from .base import Base
 
@@ -12,3 +14,5 @@ class CardModel(Base):
     fase_id: str = Field(..., description="Identificador da fase associado")
     artefato_id: str = Field(..., description="Identificador do artefato associado")
     responsavel_id: str = Field(..., description="Identificador do responsável associado")
+    started: datetime = Field(description="Data de início do andamento do card", default=None)
+    progress: datetime = Field(description="Progresso do andamento das atividades do card", default=None)

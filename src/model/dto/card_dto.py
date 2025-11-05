@@ -13,6 +13,8 @@ class CardCreateDTO(BaseModel):
     fase_id: str = Field(..., description="Identificador da fase associado")
     artefato_id: str = Field(..., description="Identificador do artefato associado")
     responsavel_id: str = Field(..., description="Identificador do responsável associado")
+    started: datetime = Field(description="Data de início do andamento do card", default=None)
+    progress: datetime = Field(description="Progresso do andamento das atividades do card", default=None)
 
 class CardUpdateDTO(BaseModel):
     status: Optional[str] = Field(None, description="Status do card", example="IN_PROGRESS")
@@ -33,6 +35,8 @@ class CardResponseDTO(BaseModel):
     fase_id: str = Field(..., description="Identificador da fase associado")
     artefato_id: str = Field(..., description="Identificador do artefato associado")
     responsavel_id: str = Field(..., description="Identificador do responsável associado")
+    started: datetime = Field(description="Data de início do andamento do card", default=None)
+    progress: datetime = Field(description="Progresso do andamento das atividades do card", default=None)
     # created_at: datetime = Field(..., description="Data de criação do registro")
     # updated_at: Optional[datetime] = Field(None, description="Data da última atualização do registro")
 
@@ -48,3 +52,5 @@ class CardResponseFiltroCicloDTO(BaseModel):
     artefato_id: str = Field(..., description="Identificador do artefato associado")
     responsavel_id: str = Field(..., description="Identificador do responsável associado")
     projeto_id: str = Field(..., description="Identificador do projeto associado ao ciclo do card")
+    started: datetime = Field(description="Data de início do andamento do card", default=None)
+    progress: datetime = Field(description="Progresso do andamento das atividades do card", default=None)

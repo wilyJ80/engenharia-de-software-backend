@@ -2,14 +2,17 @@ from fastapi import APIRouter, status, Depends, HTTPException
 from psycopg2.extensions import connection
 
 from db.database import get_db
-from model.projeto import Projeto, ProjetoBase
+from model.projeto import Projeto, ProjetoBase, ProjetoCreate, ProjetoResponse
 from service.projeto_service import ProjetoService
 
 router = APIRouter(prefix="/projetos", tags=['projetos'])
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=Projeto)
-async def create_projeto(projeto: ProjetoBase, db: connection = Depends(get_db)):
+@router.post("/", status_code=status.HTTP_201_CREATED)
+async def create_projeto(projeto: ProjetoCreate, db: connection = Depends(get_db)):
+    """
+    Cria um novo projeto e associa os responsáveis indicados.
+    """
     try:
         created = await ProjetoService.create_projeto(db, projeto.dict())
         if not created:
@@ -23,8 +26,11 @@ async def create_projeto(projeto: ProjetoBase, db: connection = Depends(get_db))
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno do servidor")
 
 
-@router.get("/", response_model=list[Projeto])
+@router.get("/")
 async def get_all_projetos(db: connection = Depends(get_db)):
+    """
+    Retorna todos os projetos cadastrados.
+    """
     try:
         projetos = await ProjetoService.get_all_projetos(db)
         return projetos
@@ -32,8 +38,11 @@ async def get_all_projetos(db: connection = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno do servidor")
 
 
-@router.get("/{projeto_id}", response_model=Projeto)
+@router.get("/{projeto_id}")
 async def get_projeto_by_id(projeto_id: str, db: connection = Depends(get_db)):
+    """
+    Retorna um projeto pelo seu ID.
+    """
     try:
         projeto = await ProjetoService.get_projeto_by_id(db, projeto_id)
         if not projeto:
@@ -45,8 +54,11 @@ async def get_projeto_by_id(projeto_id: str, db: connection = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno do servidor")
 
 
-@router.put("/{projeto_id}", response_model=Projeto)
+@router.put("/{projeto_id}")
 async def update_projeto(projeto_id: str, projeto: ProjetoBase, db: connection = Depends(get_db)):
+    """
+    Atualiza os dados de um projeto.
+    """
     try:
         updated = await ProjetoService.update_projeto(db, projeto_id, projeto.dict())
         if not updated:
@@ -62,6 +74,9 @@ async def update_projeto(projeto_id: str, projeto: ProjetoBase, db: connection =
 
 @router.delete("/{projeto_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_projeto(projeto_id: str, db: connection = Depends(get_db)):
+    """
+    Remove um projeto existente.
+    """
     try:
         deleted = await ProjetoService.delete_projeto(db, projeto_id)
         if not deleted:

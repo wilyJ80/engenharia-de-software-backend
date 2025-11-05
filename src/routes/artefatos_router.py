@@ -1,5 +1,4 @@
-from http.client import HTTPException
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends
 from model.artefato import Artefato, ArtefatoBase, ArtefatoResponse
 from service import artefato_service
 from psycopg2.extensions import connection
