@@ -26,21 +26,10 @@ async def get_all_projetos(conn: connection) -> List[Dict[str, Any]]:
                                 'email', u.email
                             )
                         ) FILTER (WHERE u.id IS NOT NULL), '[]'
-                    ) AS responsaveis_dto,
-                    COALESCE(
-                        JSON_AGG(
-                            DISTINCT JSONB_BUILD_OBJECT(
-                                'id', c.id,
-                                'nome', c.nome,
-                                'versao', c.versao,
-                                'created_at', c.created_at
-                            )
-                        ) FILTER (WHERE c.id IS NOT NULL), '[]'
-                    ) AS ciclos_dto
+                    ) AS responsaveis
                 FROM projeto p
                 LEFT JOIN projetousuario pu ON p.id = pu.projeto_id
                 LEFT JOIN usuario u ON pu.usuario_id = u.id
-                LEFT JOIN ciclo c ON c.projeto_id = p.id
                 GROUP BY p.id
                 ORDER BY p.created_at DESC;
             """)
@@ -69,21 +58,10 @@ async def get_projeto_by_id(conn: connection, projeto_id: str) -> Optional[Dict[
                                 'email', u.email
                             )
                         ) FILTER (WHERE u.id IS NOT NULL), '[]'
-                    ) AS responsaveis_dto,
-                    COALESCE(
-                        JSON_AGG(
-                            DISTINCT JSONB_BUILD_OBJECT(
-                                'id', c.id,
-                                'nome', c.nome,
-                                'versao', c.versao,
-                                'created_at', c.created_at
-                            )
-                        ) FILTER (WHERE c.id IS NOT NULL), '[]'
-                    ) AS ciclos_dto
+                    ) AS responsaveis
                 FROM projeto p
                 LEFT JOIN projetousuario pu ON p.id = pu.projeto_id
                 LEFT JOIN usuario u ON pu.usuario_id = u.id
-                LEFT JOIN ciclo c ON c.projeto_id = p.id
                 WHERE p.id = %s
                 GROUP BY p.id;
             """, (projeto_id,))
