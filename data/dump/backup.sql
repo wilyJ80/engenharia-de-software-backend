@@ -76,7 +76,9 @@ CREATE TABLE public.card (
     artefato_id uuid NOT NULL,
     responsavel_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    started timestamp with time zone DEFAULT now() NOT NULL,
+    progress timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
