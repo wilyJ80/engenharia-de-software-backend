@@ -48,6 +48,7 @@ def test_projeto_base_serialization():
     }
     assert data == expected
 
+
 def test_projeto_response_model():
     projeto_id = str(uuid.uuid4())
     projeto = ProjetoResponse(
@@ -58,6 +59,7 @@ def test_projeto_response_model():
     assert projeto.id == projeto_id
     assert projeto.nome == "Projeto Response"
     assert projeto.descritivo == "Projeto para response"
+ 
 
 def test_projeto_complete_model():
     projeto_id = str(uuid.uuid4())
@@ -74,6 +76,7 @@ def test_projeto_complete_model():
     assert projeto.descritivo == "Projeto com timestamps"
     assert projeto.created_at == now
     assert projeto.updated_at == now
+
 
 def test_projeto_inheritance():
     # Testa se ProjetoResponse herda de ProjetoBase
@@ -94,6 +97,7 @@ def test_projeto_inheritance():
     assert isinstance(projeto_full, ProjetoResponse)
     assert isinstance(projeto_full, ProjetoBase)
 
+
 def test_projeto_deserialization():
     projeto_id = str(uuid.uuid4())
     data = {
@@ -105,6 +109,7 @@ def test_projeto_deserialization():
     assert projeto.id == projeto_id
     assert projeto.nome == "Projeto Deserialização"
     assert projeto.descritivo == "Teste de deserialização"
+
 
 def test_projeto_optional_fields():
     # Testa campos opcionais

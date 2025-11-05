@@ -13,20 +13,24 @@ from model.artefato import ArtefatoBase, Artefato, ArtefatoResponse
 def artefato_base():
     return ArtefatoBase(nome="Artefato de Teste")
 
+
 def test_artefato_base_model():
     artefato = ArtefatoBase(nome="Teste de Artefato")
     assert artefato.nome == "Teste de Artefato"
     assert hasattr(artefato, "nome")
+
 
 def test_artefato_base_validation():
     # Testa se o campo nome é obrigatório
     with pytest.raises(ValueError):
         ArtefatoBase()
 
+
 def test_artefato_base_serialization():
     artefato = ArtefatoBase(nome="Teste de Serialização")
     data = artefato.model_dump()
     assert data == {"nome": "Teste de Serialização"}
+
 
 def test_artefato_response_model():
     artefato_id = str(uuid.uuid4())
@@ -36,6 +40,7 @@ def test_artefato_response_model():
     )
     assert artefato.id == artefato_id
     assert artefato.nome == "Artefato Response"
+
 
 def test_artefato_complete_model():
     artefato_id = str(uuid.uuid4())
@@ -51,6 +56,7 @@ def test_artefato_complete_model():
     assert artefato.created_at == now
     assert artefato.updated_at == now
 
+
 def test_artefato_inheritance():
     # Testa se ArtefatoResponse herda de ArtefatoBase
     artefato = ArtefatoResponse(id=str(uuid.uuid4()), nome="Teste")
@@ -64,3 +70,5 @@ def test_artefato_inheritance():
     )
     assert isinstance(artefato_full, ArtefatoResponse)
     assert isinstance(artefato_full, ArtefatoBase)
+
+    #editar, apagar, rotas

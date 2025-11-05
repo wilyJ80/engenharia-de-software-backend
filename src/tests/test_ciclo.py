@@ -16,6 +16,7 @@ def ciclo_create():
         projeto_id=str(uuid.uuid4())
     )
 
+
 @pytest.fixture
 def ciclo_update():
     return CicloUpdateDTO(
@@ -23,6 +24,7 @@ def ciclo_update():
         versao="1.1.0",
         projeto_id=str(uuid.uuid4())
     )
+
 
 def test_ciclo_create_dto():
     projeto_id = str(uuid.uuid4())
@@ -35,6 +37,7 @@ def test_ciclo_create_dto():
     assert ciclo.versao == "2.0.0"
     assert ciclo.projeto_id == projeto_id
 
+
 def test_ciclo_create_dto_validation():
     # Testa se todos os campos são obrigatórios
     with pytest.raises(ValueError):
@@ -46,6 +49,7 @@ def test_ciclo_create_dto_validation():
     with pytest.raises(ValueError):
         CicloCreateDTO(nome="Teste", versao="1.0.0")
 
+
 def test_ciclo_update_dto():
     projeto_id = str(uuid.uuid4())
     ciclo = CicloUpdateDTO(
@@ -56,6 +60,7 @@ def test_ciclo_update_dto():
     assert ciclo.nome == "Ciclo Atualizado"
     assert ciclo.versao == "2.1.0"
     assert ciclo.projeto_id == projeto_id
+
 
 def test_ciclo_response_dto():
     ciclo_id = str(uuid.uuid4())
@@ -70,6 +75,7 @@ def test_ciclo_response_dto():
     assert ciclo.nome == "Ciclo Response"
     assert ciclo.versao == "3.0.0"
     assert ciclo.projeto_id == projeto_id
+
 
 def test_ciclo_serialization():
     projeto_id = str(uuid.uuid4())
@@ -86,6 +92,7 @@ def test_ciclo_serialization():
     }
     assert data == expected
 
+
 def test_ciclo_deserialization():
     projeto_id = str(uuid.uuid4())
     data = {
@@ -97,6 +104,7 @@ def test_ciclo_deserialization():
     assert ciclo.nome == "Ciclo Deserialização"
     assert ciclo.versao == "2.3.0"
     assert ciclo.projeto_id == projeto_id
+
 
 def test_ciclo_update_vs_create_dto():
     projeto_id = str(uuid.uuid4())
@@ -115,6 +123,7 @@ def test_ciclo_update_vs_create_dto():
     assert ciclo_create.versao == ciclo_update.versao
     assert ciclo_create.projeto_id == ciclo_update.projeto_id
 
+
 def test_ciclo_response_with_id():
     ciclo_id = str(uuid.uuid4())
     projeto_id = str(uuid.uuid4())
@@ -130,3 +139,5 @@ def test_ciclo_response_with_id():
     ciclo_response = CicloResponseDTO(**response_data)
     assert hasattr(ciclo_response, "id")
     assert ciclo_response.id == ciclo_id
+
+    #falta um delete
