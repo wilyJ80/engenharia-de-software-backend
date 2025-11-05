@@ -71,4 +71,3 @@ def test_artefato_inheritance():
     assert isinstance(artefato_full, ArtefatoResponse)
     assert isinstance(artefato_full, ArtefatoBase)
 
-    #editar, apagar, rotas

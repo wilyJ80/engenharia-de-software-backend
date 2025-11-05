@@ -1,15 +1,40 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
+from model.artefato import ArtefatoResponse
 
 class FaseBase(BaseModel):
+    nome : str = Field(description="Nome da fase", example="Elaboração")
+    descritivo: str = Field(description="Descrição da fase", example="Fase de elaboração do produto.")
+    ordem: int = Field(description="Ordem da fase", example=1)
+
+class FaseCreate(BaseModel):
     nome : str = Field(description="Nome da fase", example="Elaboração")
     descritivo: str = Field(description="Descrição da fase", example="Fase de elaboração do produto.")
     artefato_ids: Optional[list[str]] = Field(None, description="Lista opcional de IDs de artefatos existentes para associar à nova fase.")
     ordem: int = Field(description="Ordem da fase", example=1)
 
+'''
+{
+    "nome": "Elaboração super g abs",
+    "descritivo": "Fase de elaboração do produto.",
+    "ordem": 1,
+    "id": "5757e6d2-66e0-4266-840b-47c36c376b97",
+    "artefato_ids": [
+      "892184fa-b32e-47c7-ae46-8b34db24e234",
+      "aa74f843-e7a8-4ae5-8026-f73fd00083f4"
+
+      
+    ]
+  }
+'''
+
+class FaseUpdate(FaseBase):
+    artefato_ids: Optional[list[str]] = Field(None, description="lista de artefatos", )
+
 class FaseResponse(FaseBase):
     id: str = Field(..., description="Identificador único da Fase")
+    artefatos: Optional[list[ArtefatoResponse]] = Field(None, description="lista de artefatos", )
 
 class Fase(FaseResponse):
     created_at: datetime           = Field(..., description="Data de criação do registro")

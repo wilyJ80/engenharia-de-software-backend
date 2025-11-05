@@ -1,4 +1,4 @@
-from model.fase import Fase, FaseBase, FaseResponse
+from model.fase import Fase, FaseBase, FaseResponse, FaseUpdate
 from repository import fase_repository
 from psycopg2.extensions import connection
 from fastapi import HTTPException
@@ -30,7 +30,7 @@ class FaseService:
     async def update_fase(
         db: connection, 
         fase_id: str, 
-        fase: FaseBase
+        fase: FaseUpdate
     ) -> FaseResponse | None:
         return await fase_repository.update_fase(db, fase_id, fase)
 

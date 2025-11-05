@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import Optional, List
-from psycopg2.extensions import connection # Assumindo que você usa psycopg2 para conexão
-from model.card import CardModel # Seu modelo de dados
-from model.dto.card_dto import CardCreateDTO, CardUpdateDTO, CardResponseDTO
-from repository import card_repository # O repositório a ser implementado
+from psycopg2.extensions import connection
+from model.card import CardModel 
+from model.dto.card_dto import CardCreateDTO, CardUpdateDTO, CardResponseDTO, CardResponseFiltroCicloDTO
+from repository import card_repository, ciclo_repository
 from utils.functions import print_error_details
 from model.card_status import CardStatus
 
@@ -110,13 +110,27 @@ class CardService:
             return []
 
     @staticmethod
-    async def get_cards_by_ciclo(conn: connection, ciclo_id: str) -> List[CardResponseDTO]:
+    async def get_cards_by_ciclo(conn: connection, ciclo_id: str) -> List[CardResponseFiltroCicloDTO]:
         """Obtém cards por ID do ciclo."""
         try:
             cards_data = await card_repository.get_cards_by_ciclo(conn, ciclo_id)
+            # retorna o objeto do ciclo
+            ciclo_obj = await  ciclo_repository.get_ciclo_by_id(conn, ciclo_id)
+         
+            # ciclo precisa existir
+            if not ciclo_obj:
+                print_error_details(e)
+                return None
+            
+            # retorna o id do projeto
+            project_id = ciclo_obj["projeto_id"]
+            for card in cards_data:
+                card["projeto_id"] = project_id
+
             return [CardService._map_to_response_dto(card) for card in cards_data]
         except Exception as e:
             print_error_details(e)
+            print(traceback.format_exc())
             return []
 
     @staticmethod
@@ -130,8 +144,24 @@ class CardService:
             return []
 
     @staticmethod
-    def _map_to_response_dto(card_data: dict) -> CardResponseDTO:
+    def _map_to_response_dto(card_data: dict) -> CardResponseDTO | CardResponseFiltroCicloDTO:
         """Função auxiliar para mapear dados do banco para o DTO de resposta."""
+
+        if card_data.get("projeto_id"):
+
+            return CardResponseFiltroCicloDTO(
+                id=card_data['id'],
+                status=CardStatus(card_data['status']), # Converte a string do DB de volta para o Enum
+                tempo_planejado_horas=card_data['tempo_planejado_horas'],
+                link=card_data['link'],
+                descricao=card_data['descricao'],
+                ciclo_id=card_data['ciclo_id'],
+                fase_id=card_data['fase_id'],
+                artefato_id=card_data['artefato_id'],
+                responsavel_id=card_data['responsavel_id'],
+                projeto_id=card_data['projeto_id']
+            )
+
         return CardResponseDTO(
             id=card_data['id'],
             status=CardStatus(card_data['status']), # Converte a string do DB de volta para o Enum

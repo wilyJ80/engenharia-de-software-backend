@@ -35,3 +35,16 @@ class CardResponseDTO(BaseModel):
     responsavel_id: str = Field(..., description="Identificador do responsável associado")
     # created_at: datetime = Field(..., description="Data de criação do registro")
     # updated_at: Optional[datetime] = Field(None, description="Data da última atualização do registro")
+
+# modelo de resposta do card que retorna um 
+class CardResponseFiltroCicloDTO(BaseModel): 
+    id: str = Field(..., description="Identificador único do card")
+    status: CardStatus = Field(..., description="Status do card")
+    tempo_planejado_horas: float = Field(..., description="Tempo de execução planejado para aquele card")
+    link: str = Field(..., description="Link associado ao card")
+    descricao: str = Field(..., description="Descrição do card")
+    ciclo_id: str = Field(..., description="Identificador do ciclo associado")
+    fase_id: str = Field(..., description="Identificador da fase associado")
+    artefato_id: str = Field(..., description="Identificador do artefato associado")
+    responsavel_id: str = Field(..., description="Identificador do responsável associado")
+    projeto_id: str = Field(..., description="Identificador do projeto associado ao ciclo do card")

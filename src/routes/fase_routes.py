@@ -1,21 +1,20 @@
-from http.client import HTTPException
 import stat
-from fastapi import APIRouter, status, Depends, Request
+from fastapi import APIRouter, status, Depends, Request, HTTPException
 from psycopg2.extensions import connection
-from model.fase import FaseBase, Fase, FaseResponse
+from model.fase import FaseBase, Fase, FaseCreate, FaseResponse, FaseUpdate
 from service.fase_service import FaseService
 from db.database import get_db
 
 fase_router = APIRouter(prefix="/fases", tags=['fase'])
 
 @fase_router.post(
-    "/create_fase",
+    "/",
     status_code=status.HTTP_201_CREATED,
-    response_model=Fase,
+    response_model=FaseResponse,
     summary="Cria uma nova fase",
 )
 async def create_fase(
-   fase: FaseBase,
+   fase: FaseCreate,
    db: connection = Depends(get_db),
 ):
     created_fase = await FaseService.create_fase(db, fase)
@@ -68,8 +67,8 @@ async def get_fase_by_id(fase_id: str, db: connection = Depends(get_db)):
     summary="Atualiza uma fase pelo ID",
 )
 async def update_fase(
-    fase_id: int, 
-    fase: FaseBase, 
+    fase_id: str, 
+    fase: FaseUpdate, 
     db: connection = Depends(get_db)
 ):
     updated_fase = await FaseService.update_fase(db, fase_id, fase)
@@ -89,11 +88,11 @@ async def update_fase(
     summary="Deleta uma fase pelo ID",
 )
 async def delete_fase(
-    fase_id: int, 
+    fase_id: str, 
     db: connection = Depends(get_db)
 ):
     deleted_fase = await FaseService.delete_fase(db, fase_id)
-
+    print(f'retorno -> {deleted_fase}')
     if deleted_fase is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
