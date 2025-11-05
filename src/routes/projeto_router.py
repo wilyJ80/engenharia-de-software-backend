@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends, HTTPException
 from psycopg2.extensions import connection
 
 from db.database import get_db
-from model.projeto import Projeto, ProjetoResponse, ProjetoBase
+from model.projeto import Projeto, ProjetoBase
 from service.projeto_service import ProjetoService
 
 router = APIRouter(prefix="/projetos", tags=['projetos'])
